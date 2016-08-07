@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/select_station"
+        android:title="@string/setStation"
+        android:icon="@drawable/train"
+        app:showAsAction="always"/>
+
+</menu>
