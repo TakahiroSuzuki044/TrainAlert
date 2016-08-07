@@ -44,8 +44,6 @@ public class MainActivity extends BaseActivity {
 
             // 駅指定ボタン押下時
             case R.id.select_station:
-                Intent intent = new Intent(this, MapActivity.class);
-                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
