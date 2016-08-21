@@ -1,11 +1,12 @@
 package com.example.suzukitakahiro.trainalert.Activity;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.Fragment.MainFragment;
 import com.example.suzukitakahiro.trainalert.R;
 
@@ -44,6 +45,13 @@ public class MainActivity extends BaseActivity {
 
             // 駅指定ボタン押下時
             case R.id.select_station:
+                break;
+
+            // 時間指定ダイアログを表示
+            case R.id.select_time:
+                FragmentManager manager = getSupportFragmentManager();
+                TimeSelectDialog dialog = new TimeSelectDialog();
+                dialog.show(manager, "timeSelectDialog");
                 break;
         }
         return super.onOptionsItemSelected(item);

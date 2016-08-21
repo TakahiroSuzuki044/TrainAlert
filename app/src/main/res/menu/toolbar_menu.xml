@@ -7,4 +7,10 @@
         android:icon="@drawable/train"
         app:showAsAction="always"/>
 
+    <item
+        android:id="@+id/select_time"
+        android:title="@string/setTime"
+        android:icon="@drawable/time"
+        app:showAsAction="always"/>
+
 </menu>
