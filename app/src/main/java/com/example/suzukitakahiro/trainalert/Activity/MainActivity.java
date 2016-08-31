@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.Fragment.MainFragment;
 import com.example.suzukitakahiro.trainalert.R;
+import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 
 public class MainActivity extends BaseActivity {
 
@@ -52,6 +53,12 @@ public class MainActivity extends BaseActivity {
                 FragmentManager manager = getSupportFragmentManager();
                 TimeSelectDialog dialog = new TimeSelectDialog();
                 dialog.show(manager, "timeSelectDialog");
+                break;
+
+            // 現在地取得
+            case R.id.select_location:
+                LocationUtil locationUtil = new LocationUtil();
+                locationUtil.getLocation(this);
                 break;
         }
         return super.onOptionsItemSelected(item);

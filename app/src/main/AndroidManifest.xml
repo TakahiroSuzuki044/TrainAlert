@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.example.suzukitakahiro.trainalert"
           xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <!-- Gpsによる現在位置取得 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <!-- ネットワークによる現在位置取得 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -20,9 +28,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activity.MapActivity"/>
+
+        <!-- 指定時間に飛ばすIntentを受け取るレシーバー -->
         <receiver android:name=".Receiver.TimeReceiver"/>
     </application>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
 
 </manifest>

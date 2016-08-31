@@ -2,6 +2,7 @@
     <string name="app_name">TrainAlert</string>
     <string name="setStation">駅を指定</string>
     <string name="setTime">時間を指定</string>
+    <string name="setLocation">現在地を指定</string>
 
     <string name="api_key_for_google_map">AIzaSyDbhaK7f2ZvOwSGqRI9h7R-HmYQaQoXDcw</string>
 </resources>

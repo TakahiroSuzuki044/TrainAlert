@@ -13,4 +13,10 @@
         android:icon="@drawable/time"
         app:showAsAction="always"/>
 
+    <item
+        android:id="@+id/select_location"
+        android:title="@string/setLocation"
+        android:icon="@drawable/location"
+        app:showAsAction="always"/>
+
 </menu>
