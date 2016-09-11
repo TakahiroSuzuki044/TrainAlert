@@ -16,7 +16,7 @@ import java.util.Calendar;
  */
 public class AlarmUtil {
 
-    public static final String TIME_RECEIVER = "time_receiver";
+    private static final String TIME_RECEIVER = "time_receiver";
 
     /**
      * 時間を指定したその日の設定時刻にアラートを表示させる
