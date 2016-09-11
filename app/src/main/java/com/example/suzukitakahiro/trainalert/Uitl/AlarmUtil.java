@@ -16,6 +16,8 @@ import java.util.Calendar;
  */
 public class AlarmUtil {
 
+    public static final String TIME_RECEIVER = "time_receiver";
+
     /**
      * 時間を指定したその日の設定時刻にアラートを表示させる
      *
@@ -34,6 +36,7 @@ public class AlarmUtil {
 
         // TimeReceiverにキャッチしてもらう
         Intent timeReceiver = new Intent(context, TimeReceiver.class);
+        timeReceiver.setAction(TIME_RECEIVER);
         PendingIntent pendingIntent =
                 PendingIntent.getBroadcast(context, 0, timeReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
 

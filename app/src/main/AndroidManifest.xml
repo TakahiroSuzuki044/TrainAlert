@@ -30,7 +30,13 @@
         <activity android:name=".Activity.MapActivity"/>
 
         <!-- 指定時間に飛ばすIntentを受け取るレシーバー -->
-        <receiver android:name=".Receiver.TimeReceiver"/>
+        <receiver android:name=".Receiver.TimeReceiver">
+
+            <!-- AlarmUtilでIntent発行時のAction設定値 -->
+            <intent-filter>
+                <action android:name="time_receiver"/>
+            </intent-filter>
+        </receiver>
 
         <!-- アラーム位置プロバイダの登録 -->
         <provider
