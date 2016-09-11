@@ -13,15 +13,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
+import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
 import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 
 public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>,
-        ListView.OnItemLongClickListener {
+        ListView.OnItemLongClickListener, DeleteDialog.DialogCallback {
 
     private static final int FIND_ALL = 0;
     private static final int FIND_BY_ID = 1;
@@ -131,6 +133,23 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        return false;
+        DeleteDialog deleteDialog = DeleteDialog.getInstance(id);
+        deleteDialog.show(getSupportFragmentManager(), "AskDeleteDialog");
+
+        // trueを返すことでOnItemClickが呼ばれなくるなる
+        return true;
+    }
+
+    @Override
+    public void onCallback(long id) {
+        LocationDao memoDao = new LocationDao(this);
+
+        // idを指定して削除
+        boolean isSuccess = memoDao.delete(id);
+        if (isSuccess) {
+            Toast.makeText(this, "削除が完了しました", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "削除に失敗しました", Toast.LENGTH_SHORT).show();
+        }
     }
 }

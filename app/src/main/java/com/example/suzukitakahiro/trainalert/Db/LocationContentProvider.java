@@ -41,6 +41,9 @@ public class LocationContentProvider extends ContentProvider {
     /** 現在地OpenHelper */
     private LocationOpenHelper mLocationOpenHelper;
 
+    /**
+     * コンテンツプロバイダーの初期化
+     */
     @Override
     public boolean onCreate() {
         mLocationOpenHelper = LocationOpenHelper.getInstance(getContext());
@@ -91,13 +94,39 @@ public class LocationContentProvider extends ContentProvider {
         return insertedUri;
     }
 
+    /**
+     * データベースを削除する
+     *
+     * @param uri コンテンツURI
+     * @param selection 突合させるカラムを指定（今回はid）
+     * @param selectionArgs 削除するid
+     */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        SQLiteDatabase database = mLocationOpenHelper.getWritableDatabase();
+        int deleteCount = database.delete(LocationColumns.LOCATION_TABLE_NAME, getSelection(selection), selectionArgs);
+
+        // データベースに変更があったことを通知する
+        getContext().getContentResolver().notifyChange(uri, null);
+        return deleteCount;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
+    }
+
+    /**
+     * 指定されたIDで検索できるようにselectionを成型する
+     *
+     * @param selection 削除するID
+     * @return 成型したselection
+     */
+    private String getSelection(String selection) {
+        if (selection != null) {
+            return LocationColumns._ID + " = ?";
+        } else {
+            return null;
+        }
     }
 }
