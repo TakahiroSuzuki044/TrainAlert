@@ -1,7 +1,9 @@
 package com.example.suzukitakahiro.trainalert.Uitl;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -10,24 +12,39 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
+
+import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
+import com.example.suzukitakahiro.trainalert.Db.LocationDao;
+
+import java.util.HashMap;
 
 /**
  * @author suzukitakahiro on 2016/08/28.
  *         <p/>
  *         Gpsで利用するUtil
  */
-public class LocationUtil {
+public class LocationUtil implements DialogInterface.OnCancelListener {
 
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private Context mContext;
+    private ProgressDialog mProgressDialog;
 
     /**
-     * 重複を防ぐために既に現在位置取得がスタートしているかチェックするフラグを用意
+     * 重複を防ぐために既に現在地取得がスタートしているかチェックするフラグを用意
      */
-    private boolean isSearchedLocationFrag = false;
+    private static boolean isSearchedLocationFrag = false;
 
-    public void getLocation(Context context) {
+    public void savedLocation(Context context) {
+
+        // 現在位置を取得中の場合は何もしない(二度押し禁止)
+        if (isSearchedLocationFrag) {
+            Log.d("locationUtil", "二度押し禁止通過");
+            return;
+        }
+
+        isSearchedLocationFrag = true;
 
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         mContext = context;
@@ -46,6 +63,14 @@ public class LocationUtil {
             // 現在位置情報が更新
             @Override
             public void onLocationChanged(Location location) {
+
+                // ダイアログが表示されていた場合消す
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+
+                // アラーム位置を登録する
+                insertLocation(location);
                 stopUpdate();
             }
 
@@ -83,13 +108,32 @@ public class LocationUtil {
                 return;
             }
 
-            // 現在位置の取得を行っていない場合は取得処理を実行する
-            if (!isSearchedLocationFrag) {
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, mLocationListener);
-                isSearchedLocationFrag = true;
-            }
+            // 現在位置の取得処理を実行する
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+            setSpinnerDialog();
+            Log.d("locationUtil", "start_location_search");
         }
 
+    }
+
+    /**
+     * 取得した位置情報をアラーム位置として登録する
+     *
+     * @param location 位置情報
+     * @return DB挿入が成功したかどうか
+     */
+    private boolean insertLocation(Location location) {
+        LocationDao dao = new LocationDao(mContext);
+
+        // TODO: 2016/09/05 運用時には入力されたタイトルを設定する
+        String title = "test";
+
+        // 緯度、経度を格納
+        HashMap<String, Double> hashMap = new HashMap<>();
+        hashMap.put(LocationColumns.LATITUDE, location.getLatitude());
+        hashMap.put(LocationColumns.LONGITUDE, location.getLongitude());
+
+        return dao.insert(title, hashMap);
     }
 
     /**
@@ -111,7 +155,38 @@ public class LocationUtil {
             // 現在位置を取得を停止させる
             if (isSearchedLocationFrag) {
                 mLocationManager.removeUpdates(mLocationListener);
+                Log.d("locationUtil", "stop_location_search");
+                isSearchedLocationFrag = false;
             }
         }
+    }
+
+    /**
+     * スピナーダイアログを表示させる
+     */
+    private void setSpinnerDialog() {
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage("現在地を取得中");
+
+        // ダイアログのスタイル
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+        // キャンセル処理を可能かどうか
+        mProgressDialog.setCancelable(true);
+
+        // キャンセル時のリスナをセット
+        mProgressDialog.setOnCancelListener(this);
+
+        mProgressDialog.show();
+    }
+
+    /**
+     * スピナーダイアログのキャンセル
+     */
+    @Override
+    public void onCancel(DialogInterface dialog) {
+
+        // 現在地取得を停止する
+        stopUpdate();
     }
 }

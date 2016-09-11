@@ -1,29 +1,47 @@
 package com.example.suzukitakahiro.trainalert.Activity;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
+import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
+import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
-import com.example.suzukitakahiro.trainalert.Fragment.MainFragment;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>,
+        ListView.OnItemLongClickListener {
+
+    private static final int FIND_ALL = 0;
+    private static final int FIND_BY_ID = 1;
+
+    private SimpleCursorAdapter mSimpleCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Fragmentの設定
-        setFragment(new MainFragment());
-
         // ツールバーの設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // リストをセット
+        setListView();
+
+        // 全件検索
+        getSupportLoaderManager().initLoader(FIND_ALL, null, this);
     }
 
     /**
@@ -55,12 +73,64 @@ public class MainActivity extends BaseActivity {
                 dialog.show(manager, "timeSelectDialog");
                 break;
 
-            // 現在地取得
+            // 現在地をアラーム情報として登録する
             case R.id.select_location:
-                LocationUtil locationUtil = new LocationUtil();
-                locationUtil.getLocation(this);
+                LocationUtil util = new LocationUtil();
+                util.savedLocation(this);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 一覧を作成
+     */
+    private void setListView() {
+        String[] from = {LocationColumns.TITLE, LocationColumns.LATITUDE, LocationColumns.LONGITUDE};
+        int[] to = {R.id.list_item_title, R.id.list_item_latitude, R.id.list_item_longitude};
+
+        mSimpleCursorAdapter = new SimpleCursorAdapter
+                (this, R.layout.list_item_location, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+        ListView listView = (ListView)findViewById(R.id.location_list_view);
+        listView.setAdapter(mSimpleCursorAdapter);
+
+        listView.setOnItemLongClickListener(this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Loader<Cursor> cursorLoader = null;
+        LocationDao locationDao = new LocationDao(this);
+        switch (id) {
+
+            // 全件検索
+            case FIND_ALL:
+                cursorLoader = locationDao.findAll();
+                break;
+
+            // 1件検索
+            case FIND_BY_ID:
+                break;
+        }
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+        // Cursorのデータを新しく置き換え
+        mSimpleCursorAdapter.swapCursor(data);
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mSimpleCursorAdapter.swapCursor(null);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        return false;
     }
 }

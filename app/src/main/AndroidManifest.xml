@@ -31,6 +31,13 @@
 
         <!-- 指定時間に飛ばすIntentを受け取るレシーバー -->
         <receiver android:name=".Receiver.TimeReceiver"/>
+
+        <!-- アラーム位置プロバイダの登録 -->
+        <provider
+            android:authorities="com.example.suzukitakahiro.trainalert.LocationContentProvider"
+            android:name=".Db.LocationContentProvider"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
