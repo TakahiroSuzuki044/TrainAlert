@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.*;
+
 /**
  * @author suzukitakahiro on 2016/09/04.
  *
@@ -22,9 +24,9 @@ public class LocationContentProvider extends ContentProvider {
 
     /** テーブルのMIMEタイプの設定 */
     public static final String CONTENT_TYPE =
-            "vnd.android.cursor.dir" + "/" + AUTHORITY + "." + LocationColumns.LOCATION_TABLE_NAME;
+            "vnd.android.cursor.dir" + "/" + AUTHORITY + "." + LOCATION_TABLE_NAME;
     public static final String CONTENT_ITEM_TYPE =
-            "vnd.android.cursor.item/*" + "/" + AUTHORITY + "." + LocationColumns.LOCATION_TABLE_NAME;
+            "vnd.android.cursor.item/*" + "/" + AUTHORITY + "." + LOCATION_TABLE_NAME;
 
     /** UriMatcher用の識別コード */
     private static final int ALL_CODE = 0;
@@ -34,8 +36,8 @@ public class LocationContentProvider extends ContentProvider {
     private static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        sUriMatcher.addURI(AUTHORITY, LocationColumns.LOCATION_TABLE_NAME, ALL_CODE);
-        sUriMatcher.addURI(AUTHORITY, LocationColumns.LOCATION_TABLE_NAME + "/#", BY_ID_CODE);
+        sUriMatcher.addURI(AUTHORITY, LOCATION_TABLE_NAME, ALL_CODE);
+        sUriMatcher.addURI(AUTHORITY, LOCATION_TABLE_NAME + "/#", BY_ID_CODE);
     }
 
     /** 現在地OpenHelper */
@@ -59,7 +61,7 @@ public class LocationContentProvider extends ContentProvider {
         // 読込専用でデータベースを開く
         SQLiteDatabase db = mLocationOpenHelper.getReadableDatabase();
         // カーソル初期位置：−１
-        Cursor cursor = db.query(LocationColumns.LOCATION_TABLE_NAME, projection, selection, selectionArgs, groupBy, having, sortOrder);
+        Cursor cursor = db.query(LOCATION_TABLE_NAME, projection, selection, selectionArgs, groupBy, having, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
@@ -86,7 +88,7 @@ public class LocationContentProvider extends ContentProvider {
 
         // 戻り値はRowID（_ID）
         // エラーの場合は-1になる
-        long rowId = db.insert(LocationColumns.LOCATION_TABLE_NAME, null, values);
+        long rowId = db.insert(LOCATION_TABLE_NAME, null, values);
 
         // インサートされた行のUriを生成
         Uri insertedUri = ContentUris.withAppendedId(uri, rowId);
@@ -104,7 +106,7 @@ public class LocationContentProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase database = mLocationOpenHelper.getWritableDatabase();
-        int deleteCount = database.delete(LocationColumns.LOCATION_TABLE_NAME, getSelection(selection), selectionArgs);
+        int deleteCount = database.delete(LOCATION_TABLE_NAME, getSelection(selection), selectionArgs);
 
         // データベースに変更があったことを通知する
         getContext().getContentResolver().notifyChange(uri, null);
@@ -124,7 +126,7 @@ public class LocationContentProvider extends ContentProvider {
      */
     private String getSelection(String selection) {
         if (selection != null) {
-            return LocationColumns._ID + " = ?";
+            return _ID + " = ?";
         } else {
             return null;
         }

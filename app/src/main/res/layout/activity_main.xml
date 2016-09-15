@@ -15,6 +15,12 @@
         android:background="@color/colorPrimary"
         android:elevation="4dp"/>
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="スタート"/>
+
     <ListView
         android:id="@+id/location_list_view"
         android:layout_width="match_parent"

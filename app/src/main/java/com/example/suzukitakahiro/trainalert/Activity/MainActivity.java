@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -23,10 +24,13 @@ import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 
 public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>,
-        ListView.OnItemLongClickListener, DeleteDialog.DialogCallback {
+        ListView.OnItemLongClickListener, DeleteDialog.DialogCallback, View.OnClickListener {
 
     private static final int FIND_ALL = 0;
     private static final int FIND_BY_ID = 1;
+
+    /** 登録地と現在地の毎時照合がスタートしているか */
+    private static boolean sIsStartedLocationSearch = false;
 
     private SimpleCursorAdapter mSimpleCursorAdapter;
 
@@ -34,6 +38,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(this);
 
         // ツールバーの設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -78,7 +85,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             // 現在地をアラーム情報として登録する
             case R.id.select_location:
                 LocationUtil util = new LocationUtil();
-                util.savedLocation(this);
+                util.saveLocation(this);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -131,6 +138,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         mSimpleCursorAdapter.swapCursor(null);
     }
 
+    /**
+     * リストのロングタップで削除ダイアログを表示する
+     */
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         DeleteDialog deleteDialog = DeleteDialog.getInstance(id);
@@ -140,6 +150,11 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         return true;
     }
 
+    /**
+     * 削除ダイアログのコールバック
+     *
+     * @param id 削除するID
+     */
     @Override
     public void onCallback(long id) {
         LocationDao memoDao = new LocationDao(this);
@@ -150,6 +165,21 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             Toast.makeText(this, "削除が完了しました", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "削除に失敗しました", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        // 二重の現在地取得を防ぐため
+        if (!sIsStartedLocationSearch) {
+            sIsStartedLocationSearch = true;
+
+            LocationUtil locationUtil = new LocationUtil();
+            locationUtil.checkLocation(this);
+            Toast.makeText(this, "毎時チェックを開始しました", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "既に毎時チェックをスタートしています", Toast.LENGTH_SHORT).show();
         }
     }
 }

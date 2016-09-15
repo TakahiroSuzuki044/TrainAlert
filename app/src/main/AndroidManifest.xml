@@ -20,14 +20,18 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key_for_google_map"/>
-        <activity android:name=".Activity.MainActivity">
+        <activity
+            android:name=".Activity.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.MapActivity"/>
+        <activity
+            android:name=".Activity.MapActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- 指定時間に飛ばすIntentを受け取るレシーバー -->
         <receiver android:name=".Receiver.TimeReceiver">

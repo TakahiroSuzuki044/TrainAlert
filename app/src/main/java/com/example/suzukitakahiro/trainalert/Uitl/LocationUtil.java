@@ -14,7 +14,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.*;
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 
 import java.util.HashMap;
@@ -26,28 +26,72 @@ import java.util.HashMap;
  */
 public class LocationUtil implements DialogInterface.OnCancelListener {
 
+    /** 現在地取得の目的 */
+    private static final int SAVE_LOCATION = 1;
+    private static final int CHECK_LOCATION = 2;
+
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private Context mContext;
+
+    /** 現在地取得時に表示させるダイアログのインスタンス */
     private ProgressDialog mProgressDialog;
 
     /**
      * 重複を防ぐために既に現在地取得がスタートしているかチェックするフラグを用意
      */
-    private static boolean isSearchedLocationFrag = false;
+    private static boolean sIsSearchedLocationFrag = false;
 
-    public void savedLocation(Context context) {
+    /** アラートチェックと位置情報登録のどちらで現在地を取得しているのか判断するフラグ */
+    private int mDecideAcquireStatusFrag = -1;
+
+    private long mMinTime = 0;
+    private float mMinDistance = 0;
+
+    /**
+     * 現在地をLocationDBに保存する
+     */
+    public void saveLocation(Context context) {
+
+        mContext = context;
+
+        // 現在地をDBに保存するフラグを立たせる
+        mDecideAcquireStatusFrag = SAVE_LOCATION;
 
         // 現在位置を取得中の場合は何もしない(二度押し禁止)
-        if (isSearchedLocationFrag) {
+        if (sIsSearchedLocationFrag) {
             Log.d("locationUtil", "二度押し禁止通過");
             return;
         }
 
-        isSearchedLocationFrag = true;
+        // 現在地の取得
+        acquireLocation();
+        sIsSearchedLocationFrag = true;
 
-        mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        // 現在地取得中はダイアログを表示する
+        setSpinnerDialog();
+    }
+
+    public void checkLocation(Context context) {
+
         mContext = context;
+
+        // 現在地チェックフラグを立たせる
+        mDecideAcquireStatusFrag = CHECK_LOCATION;
+
+        // 常時チェックのため100メートル且つ1分ごとでチェックを行う
+        mMinTime = 60000;
+        mMinDistance = 50;
+
+        // 現在地取得
+        acquireLocation();
+    }
+
+    /**
+     * 位置情報を取得する
+     */
+    private void acquireLocation() {
+        mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
 
         Criteria criteria = new Criteria();
 
@@ -64,14 +108,24 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
             @Override
             public void onLocationChanged(Location location) {
 
-                // ダイアログが表示されていた場合消す
-                if (mProgressDialog != null && mProgressDialog.isShowing()) {
-                    mProgressDialog.dismiss();
+                // 現在地をDBに保存する
+                if (mDecideAcquireStatusFrag == SAVE_LOCATION) {
+
+                    // ダイアログが表示されていた場合消す
+                    if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                        mProgressDialog.dismiss();
+                    }
+
+                    // アラーム位置を登録する
+                    insertLocation(location);
+                    stopUpdate();
                 }
 
-                // アラーム位置を登録する
-                insertLocation(location);
-                stopUpdate();
+                // 現在地チェック
+                if (mDecideAcquireStatusFrag == CHECK_LOCATION) {
+                    checkShowAlert(location);
+                }
+
             }
 
             // プロバイダの利用状況(利用出来ている/できていないなど)情報に変更があったとき
@@ -109,11 +163,9 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
             }
 
             // 現在位置の取得処理を実行する
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-            setSpinnerDialog();
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, mMinTime, mMinDistance, mLocationListener);
             Log.d("locationUtil", "start_location_search");
         }
-
     }
 
     /**
@@ -130,10 +182,26 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
 
         // 緯度、経度を格納
         HashMap<String, Double> hashMap = new HashMap<>();
-        hashMap.put(LocationColumns.LATITUDE, location.getLatitude());
-        hashMap.put(LocationColumns.LONGITUDE, location.getLongitude());
+        hashMap.put(LATITUDE, location.getLatitude());
+        hashMap.put(LONGITUDE, location.getLongitude());
 
         return dao.insert(title, hashMap);
+    }
+
+    /**
+     * 登録地と比較して200m圏内の場合はアラートを出す
+     *
+     * @param location
+     */
+    private void checkShowAlert(Location location) {
+        LocationDao locationDao = new LocationDao(mContext);
+        boolean isLess200meters = locationDao.collateLocationDb(location);
+
+        if (isLess200meters) {
+            NotificationUtil notificationUtil = new NotificationUtil();
+            notificationUtil.createHeadsUpNotification(mContext);
+        }
+
     }
 
     /**
@@ -153,10 +221,10 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
             }
 
             // 現在位置を取得を停止させる
-            if (isSearchedLocationFrag) {
+            if (sIsSearchedLocationFrag) {
                 mLocationManager.removeUpdates(mLocationListener);
                 Log.d("locationUtil", "stop_location_search");
-                isSearchedLocationFrag = false;
+                sIsSearchedLocationFrag = false;
             }
         }
     }
@@ -189,4 +257,7 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
         // 現在地取得を停止する
         stopUpdate();
     }
+
+    // TODO: 2016/09/12 Networkが取得出来ない場合はGPSでチェックするように変更
+    // TODO: 2016/09/12 電車に乗ったと判断したときの毎時チェックも必要
 }

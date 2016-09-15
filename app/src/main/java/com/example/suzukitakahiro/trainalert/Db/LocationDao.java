@@ -3,19 +3,24 @@ package com.example.suzukitakahiro.trainalert.Db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.location.Location;
 import android.net.Uri;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
+import com.example.suzukitakahiro.trainalert.Uitl.CalcUtil;
+
 import java.util.HashMap;
+
+import static com.example.suzukitakahiro.trainalert.Db.LocationContentProvider.*;
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.*;
 
 /**
  * @author suzukitakahiro on 2016/09/04.
  */
 public class LocationDao {
 
-    public static final Uri CONTENT_URI = Uri.parse
-            (LocationContentProvider.SCHEME + LocationContentProvider.AUTHORITY + "/" + LocationColumns.LOCATION_TABLE_NAME);
+    public static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + LOCATION_TABLE_NAME);
 
     private Context mContext;
 
@@ -29,10 +34,66 @@ public class LocationDao {
     }
 
     /**
+     * LocationDBと照合し200m圏内の場合はアラートを促す
+     */
+    public boolean collateLocationDb(Location location) {
+        Cursor cursor = findAllReturnCursor();
+
+        Double latitude;
+        Double longitude;
+
+        while (cursor.moveToNext()) {
+            latitude = cursor.getDouble(LATITUDE_COLUMN);
+            longitude = cursor.getDouble(LONGITUDE_COLUMN);
+
+            // {二点間距離[m], 始点から見た方位角, 終点から見た方位角}が格納される
+            float[] distance = new float[3];
+
+            Location.distanceBetween(latitude, longitude, location.getLatitude(), location.getLongitude(), distance);
+
+            // 現在地と登録地の距離が200m圏内の場合はアラートを促す
+            if (distance[0] < 200) {
+                return true;
+            }
+        }
+
+        // アラートを上げる必要なし
+        return false;
+    }
+
+    /**
+     * LocationDBの全件検索
+     *
+     * @return 全件情報
+     */
+    public Cursor findAllReturnCursor() {
+
+        // 取得する情報
+        String[] projection = {
+                LocationColumns._ID,
+                LocationColumns.TITLE,
+                LocationColumns.LATITUDE,
+                LocationColumns.LONGITUDE
+        };
+
+        // WhereのKey部分
+        String selection = null;
+
+        // WhereのValue部分
+        String[] selectionArgs = null;
+
+        // GroupBy
+        String sortOrder = null;
+
+        // カーソル初期位置：−１
+        return mContext.getContentResolver().query(CONTENT_URI, projection, selection, selectionArgs, sortOrder);
+    }
+
+    /**
      * アラーム位置DBに位置情報を挿入する
      * @param title 挿入するタイトル
      * @param hashMap LocationColumnsのTITLE/LATITUDE/LONGITUDEをキーとして、タイトル/緯度/経度を指定する
-     * @return
+     * @return Cursor
      */
     public boolean insert(String title, HashMap hashMap) {
         ContentValues values = new ContentValues();
@@ -50,12 +111,11 @@ public class LocationDao {
 
     /**
      * アラーム位置DBから全レコード情報を取得する
-     * @return
      */
     public Loader<Cursor> findAll() {
 
         // 取得する情報
-        String[] columns = {
+        String[] projection = {
                 LocationColumns._ID,
                 LocationColumns.TITLE,
                 LocationColumns.LATITUDE,
@@ -64,11 +124,10 @@ public class LocationDao {
 
         String[] selectionArgs = null;
         String selection = null;
-        String orderBy = null;
+        String sortOrder = null;
 
         // カーソル初期位置：−１
-        Loader<Cursor> cursorLoader = new CursorLoader(mContext, CONTENT_URI, columns, selection, selectionArgs, orderBy);
-        return cursorLoader;
+        return new CursorLoader(mContext, CONTENT_URI, projection, selection, selectionArgs, sortOrder);
     }
 
     /**

@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 
 import com.example.suzukitakahiro.trainalert.Receiver.TimeReceiver;
 
@@ -43,5 +44,9 @@ public class AlarmUtil {
         // 設定した時間でブロードキャストする
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+    }
+
+    public void setAlarmInLocation(Location location) {
+
     }
 }

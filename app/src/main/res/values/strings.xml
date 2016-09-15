@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TrainAlert</string>
+    <string name="app_name">激おこ</string>
     <string name="setStation">駅を指定</string>
     <string name="setTime">時間を指定</string>
     <string name="setLocation">現在地を指定</string>
