@@ -39,7 +39,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button button = (Button) findViewById(R.id.button);
+        Button button = (Button) findViewById(R.id.start_button);
         button.setOnClickListener(this);
 
         // ツールバーの設定

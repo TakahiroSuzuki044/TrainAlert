@@ -80,7 +80,7 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
         mDecideAcquireStatusFrag = CHECK_LOCATION;
 
         // 常時チェックのため100メートル且つ1分ごとでチェックを行う
-        mMinTime = 60000;
+        mMinTime = 30000;
         mMinDistance = 50;
 
         // 現在地取得
