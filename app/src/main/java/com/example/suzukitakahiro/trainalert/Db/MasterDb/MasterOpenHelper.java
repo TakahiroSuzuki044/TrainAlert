@@ -1,4 +1,4 @@
-package com.example.suzukitakahiro.trainalert.Db.StationDb;
+package com.example.suzukitakahiro.trainalert.Db.MasterDb;
 
 import android.content.Context;
 import android.content.res.AssetManager;
