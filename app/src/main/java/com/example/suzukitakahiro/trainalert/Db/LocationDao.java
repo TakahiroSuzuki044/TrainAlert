@@ -43,6 +43,8 @@ public class LocationDao {
         Double longitude;
 
         while (cursor.moveToNext()) {
+
+            // DBの列を指定して値を取得
             latitude = cursor.getDouble(LATITUDE_COLUMN);
             longitude = cursor.getDouble(LONGITUDE_COLUMN);
 

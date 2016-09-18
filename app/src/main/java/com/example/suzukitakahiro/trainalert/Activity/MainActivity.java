@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
+import com.example.suzukitakahiro.trainalert.Db.StationDb.MasterOpenHelper;
 import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
 import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.R;
@@ -51,6 +52,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         // 全件検索
         getSupportLoaderManager().initLoader(FIND_ALL, null, this);
+
+        MasterOpenHelper masterOpenHelper = MasterOpenHelper.getInstance(this);
     }
 
     /**
