@@ -16,7 +16,8 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterContentPro
  * @author suzukitakahiro on 16/09/20.
  */
 public class LineDao {
-    public static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + LINE_TABEL_NAME);
+
+    private static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + LINE_TABEL_NAME);
 
     private Context mContext;
 

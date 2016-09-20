@@ -21,7 +21,7 @@ import static com.example.suzukitakahiro.trainalert.Db.LocationContentProvider.S
  */
 public class LocationDao {
 
-    public static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + LOCATION_TABLE_NAME);
+    private static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + LOCATION_TABLE_NAME);
 
     private Context mContext;
 

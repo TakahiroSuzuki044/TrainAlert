@@ -16,7 +16,7 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.*;
  */
 public class ProfDao {
 
-    public static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + PREF_TABLE_NAME);
+    private static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + PREF_TABLE_NAME);
 
     private Context mContext;
 

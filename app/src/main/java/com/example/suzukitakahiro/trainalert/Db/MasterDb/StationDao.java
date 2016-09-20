@@ -20,7 +20,7 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterContentPro
  */
 public class StationDao {
 
-    public static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + STATION_TABLE_NAME);
+    private static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + STATION_TABLE_NAME);
 
     private Context mContext;
 
