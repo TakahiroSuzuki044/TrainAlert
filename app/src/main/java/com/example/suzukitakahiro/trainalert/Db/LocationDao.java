@@ -8,12 +8,13 @@ import android.net.Uri;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
-import com.example.suzukitakahiro.trainalert.Uitl.CalcUtil;
-
 import java.util.HashMap;
 
-import static com.example.suzukitakahiro.trainalert.Db.LocationContentProvider.*;
-import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.*;
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LATITUDE_COLUMN;
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LOCATION_TABLE_NAME;
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LONGITUDE_COLUMN;
+import static com.example.suzukitakahiro.trainalert.Db.LocationContentProvider.AUTHORITY;
+import static com.example.suzukitakahiro.trainalert.Db.LocationContentProvider.SCHEME;
 
 /**
  * @author suzukitakahiro on 2016/09/04.
