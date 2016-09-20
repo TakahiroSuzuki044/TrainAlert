@@ -14,13 +14,13 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.*;
  *
  * @author suzukitakahiro on 16/09/19.
  */
-public class ProfDao {
+public class PrefDao {
 
     private static final Uri CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + "/" + PREF_TABLE_NAME);
 
     private Context mContext;
 
-    public ProfDao(Context context) {
+    public PrefDao(Context context) {
         mContext = context;
     }
 
