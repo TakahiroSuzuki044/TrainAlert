@@ -32,6 +32,8 @@
         <activity
             android:name=".Activity.MapActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.SearchStationActivity"
+                  android:screenOrientation="portrait"/>
 
         <!-- 指定時間に飛ばすIntentを受け取るレシーバー -->
         <receiver android:name=".Receiver.TimeReceiver">
@@ -46,6 +48,11 @@
         <provider
             android:authorities="com.example.suzukitakahiro.trainalert.LocationContentProvider"
             android:name=".Db.LocationContentProvider"
+            android:exported="false"/>
+
+        <provider
+            android:authorities="com.example.suzukitakahiro.trainalert.MasterContentProvider"
+            android:name=".Db.MasterDb.MasterContentProvider"
             android:exported="false"/>
 
     </application>

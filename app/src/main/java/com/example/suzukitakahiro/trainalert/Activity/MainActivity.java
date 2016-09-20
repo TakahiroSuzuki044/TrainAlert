@@ -1,5 +1,6 @@
 package com.example.suzukitakahiro.trainalert.Activity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -52,8 +53,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         // 全件検索
         getSupportLoaderManager().initLoader(FIND_ALL, null, this);
-
-        MasterOpenHelper masterOpenHelper = MasterOpenHelper.getInstance(this);
     }
 
     /**
@@ -76,6 +75,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
             // 駅指定ボタン押下時
             case R.id.select_station:
+                Intent intent = new Intent(this, SearchStationActivity.class);
+                startActivity(intent);
                 break;
 
             // 時間指定ダイアログを表示
