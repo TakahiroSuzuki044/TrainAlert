@@ -21,7 +21,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void setFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragment_container, fragment);
+        transaction.add(R.id.fragment_container, fragment);
         transaction.commit();
     }
 

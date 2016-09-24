@@ -64,7 +64,7 @@ public class MasterOpenHelper extends SQLiteOpenHelper{
             db.setTransactionSuccessful();
 
         } catch (Exception e) {
-            // ignore
+            e.printStackTrace();
         } finally {
             db.endTransaction();
         }

@@ -1,7 +1,6 @@
 package com.example.suzukitakahiro.trainalert.Fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -19,25 +18,24 @@ import com.example.suzukitakahiro.trainalert.Db.MasterDb.PrefDao;
 import com.example.suzukitakahiro.trainalert.R;
 
 /**
- * 都道府県選択フラグメント
- *
- * @author suzukitakahiro on 16/09/21.
+ * @author suzukitakahiro on 16/09/23.
  */
-public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
+public class LineFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        AdapterView.OnItemClickListener {
 
     private Context mContext;
     private View mView;
     private SimpleCursorAdapter mSimpleCursorAdapter;
-    
+
     private static final int FIND_ALL = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = getContext();
         mView = inflater.inflate(R.layout.fragment_select, container, false);
-        
+
         setListView();
-        
+
         // 都道府県リスト読み込みスタート
         getActivity().getSupportLoaderManager().initLoader(FIND_ALL, null, this);
         return mView;
@@ -58,14 +56,12 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mSimpleCursorAdapter.swapCursor(data);
-    }
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {}
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {}
 
-    /** 
+    /**
      * 一覧を作成
      */
     private void setListView() {
@@ -80,11 +76,12 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
 
         listView.setOnItemClickListener(this);
     }
-    
+
     /**
      * リスト選択時の処理
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // TODO: 16/09/23 position情報から情報を取得できるか
     }
 }

@@ -31,6 +31,7 @@ public class PrefDao {
 
         // 取得する情報
         String[] projection = {
+                "rowid as _id",
                 PREF_CD,
                 PREF_NAME
         };

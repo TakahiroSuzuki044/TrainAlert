@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
-import com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterOpenHelper;
 import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
 import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.R;
@@ -100,7 +99,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
      */
     private void setListView() {
         String[] from = {LocationColumns.TITLE, LocationColumns.LATITUDE, LocationColumns.LONGITUDE};
-        int[] to = {R.id.list_item_title, R.id.list_item_latitude, R.id.list_item_longitude};
+        int[] to = {R.id.select_list_item_title, R.id.list_item_latitude, R.id.list_item_longitude};
 
         mSimpleCursorAdapter = new SimpleCursorAdapter
                 (this, R.layout.list_item_location, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
@@ -134,7 +133,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         // Cursorのデータを新しく置き換え
         mSimpleCursorAdapter.swapCursor(data);
-
     }
 
     @Override
