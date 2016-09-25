@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import static android.provider.BaseColumns._ID;
-
 /**
  * マスターDBのコンテンツプロバイダー
  *

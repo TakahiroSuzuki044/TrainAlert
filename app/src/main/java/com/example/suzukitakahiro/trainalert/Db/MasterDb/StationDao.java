@@ -33,7 +33,7 @@ public class StationDao {
     /**
      * 都道府県コードに一致する沿線コードを取得する
      */
-    public Loader<Cursor> findByPrefCd(long prefCd) {
+    public Loader<Cursor> findByPrefCd(int prefCd) {
 
         // 取得する情報
         String[] projection = {

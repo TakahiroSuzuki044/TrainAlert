@@ -14,10 +14,14 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns;
-import com.example.suzukitakahiro.trainalert.Db.MasterDb.PrefDao;
+import com.example.suzukitakahiro.trainalert.Db.MasterDb.StationDao;
 import com.example.suzukitakahiro.trainalert.R;
 
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.*;
+
 /**
+ * 駅指定画面フラグメント
+ *
  * @author suzukitakahiro on 16/09/23.
  */
 public class StationFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,
@@ -27,36 +31,61 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
     private View mView;
     private SimpleCursorAdapter mSimpleCursorAdapter;
 
-    private static final int FIND_ALL = 0;
+    /** 駅テーブルで路線コードから駅名を取得 */
+    private static final int FIND_STATION_BY_LINE_ID = 3;
+    /** 駅テーブルで駅コードから駅情報を取得 */
+    private static final int FIND_STATION_BY_STATION_ID = 4;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = getContext();
         mView = inflater.inflate(R.layout.fragment_select, container, false);
 
+        // 選択された都道府県CDを取得
+        Bundle args = getArguments();
+
         setListView();
 
-        // 都道府県リスト読み込みスタート
-        getActivity().getSupportLoaderManager().initLoader(FIND_ALL, null, this);
+        // 駅リスト読み込みスタート
+        getActivity().getSupportLoaderManager().initLoader(FIND_STATION_BY_LINE_ID, args, this);
         return mView;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Loader<Cursor> cursorLoader = null;
-        PrefDao prefDao = new PrefDao(mContext);
+        StationDao stationDao = new StationDao(mContext);
         switch (id) {
 
-            // 全件検索
-            case FIND_ALL:
-                cursorLoader = prefDao.findAll();
+            // 路線コードから該当する駅名を取得
+            case FIND_STATION_BY_LINE_ID:
+                int lineCd = args.getInt(LINE_CD);
+                cursorLoader = stationDao.findByLineCd(lineCd);
+                break;
+
+            // 駅コードから駅情報（緯度/経度）を取得
+            case FIND_STATION_BY_STATION_ID:
+                int stationCd = args.getInt(STATION_CD);
+                cursorLoader = stationDao.findByStationCd(stationCd);
                 break;
         }
         return cursorLoader;
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {}
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        switch (loader.getId()) {
+
+            // 駅一覧を表示する
+            case FIND_STATION_BY_LINE_ID:
+                mSimpleCursorAdapter.swapCursor(cursor);
+                break;
+
+            // 緯度/経度を取得して登録する
+            case FIND_STATION_BY_STATION_ID:
+                break;
+        }
+    }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {}
@@ -65,7 +94,7 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
      * 一覧を作成
      */
     private void setListView() {
-        String[] from = {MasterColumns.PREF_NAME};
+        String[] from = {STATION_NAME};
         int[] to = {R.id.select_list_item_title};
 
         mSimpleCursorAdapter = new SimpleCursorAdapter
@@ -82,6 +111,14 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // TODO: 16/09/23 position情報から情報を取得できるか
+
+        // 選択された駅コードを取得
+        Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+        int stationCd = cursor.getInt(STATION_CD_COLUMN);
+
+        // 駅詳細情報検索
+        Bundle bundle = new Bundle();
+        bundle.putInt(STATION_CD, stationCd);
+        getActivity().getSupportLoaderManager().initLoader(FIND_STATION_BY_STATION_ID, bundle, this);
     }
 }

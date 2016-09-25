@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
@@ -15,9 +14,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.PrefDao;
 import com.example.suzukitakahiro.trainalert.R;
+
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_CD;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_CD_COLUMN;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_NAME;
+
 
 /**
  * 都道府県選択フラグメント
@@ -70,7 +73,7 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
      * 一覧を作成
      */
     private void setListView() {
-        String[] from = {MasterColumns.PREF_NAME};
+        String[] from = {PREF_NAME};
         int[] to = {R.id.select_list_item_title};
 
         mSimpleCursorAdapter = new SimpleCursorAdapter
@@ -86,15 +89,17 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
      * リスト選択時の処理
      */
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long prefCd) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        // 選択されたid（prefCdに今回は等しい）の情報を付与して路線画面へ遷移
+        // 選択された都道府県コードを取得
+        Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+        int prefCd = cursor.getInt(PREF_CD_COLUMN);
+
+        // 路線画面へ遷移
         Bundle bundle = new Bundle();
-        bundle.putLong(MasterColumns.PREF_CD, prefCd);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        Fragment lineFragment = new LineFragment();
-        lineFragment.setArguments(bundle);
-        transaction.replace(R.id.fragment_container, lineFragment);
-        transaction.commit();
+        bundle.putInt(PREF_CD, prefCd);
+        Fragment fragment = new LineFragment();
+        fragment.setArguments(bundle);
+        setFragment(fragment);
     }
 }

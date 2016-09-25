@@ -1,9 +1,9 @@
 package com.example.suzukitakahiro.trainalert.Fragment;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
@@ -15,11 +15,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.LineDao;
-import com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.StationDao;
 import com.example.suzukitakahiro.trainalert.R;
 
 import java.util.ArrayList;
+
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LINE_CD;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LINE_CD_COLUMN;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LINE_NAME;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_CD;
 
 /**
  * @author suzukitakahiro on 16/09/23.
@@ -35,7 +39,9 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
     private View mView;
     private SimpleCursorAdapter mSimpleCursorAdapter;
 
+    /** 駅テーブルで都道府県コードから路線コード取得 */
     private static final int FIND_STATION_BY_PREF_CD = 1;
+    /** 路線テーブルで路線コードから路線コード/路線名を取得 */
     private static final int FIND_LINE_BY_LINE_CD = 2;
 
     @Override
@@ -60,14 +66,14 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
 
             // 都道府県コードで駅検索
             case FIND_STATION_BY_PREF_CD:
-                long prefCd = args.getLong(MasterColumns.PREF_CD);
+                int prefCd = args.getInt(PREF_CD);
                 StationDao stationDao = new StationDao(getActivity());
                 cursorLoader = stationDao.findByPrefCd(prefCd);
                 break;
 
             // 路線コードで路線コード/路線名を検索
             case FIND_LINE_BY_LINE_CD:
-                String[] lineCds = args.getStringArray(MasterColumns.LINE_CD);
+                String[] lineCds = args.getStringArray(LINE_CD);
                 LineDao lineDao = new LineDao(getActivity());
                 cursorLoader = lineDao.findByLineCds(lineCds);
                 break;
@@ -79,15 +85,14 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         switch (loader.getId()) {
 
-            // 駅テーブルで選択された都道府県コードに一致する路線コードを取得した場合
+            // 駅テーブルで選択された都道府県コードに一致する路線コードを取得
             case FIND_STATION_BY_PREF_CD:
 
-                int lineCdColumn = 1;
                 ArrayList<String> lineCdList = new ArrayList<>();
 
                 // 取得した路線コードの重複を無くしてリスト化する
                 while (cursor.moveToNext()) {
-                    String lineCd = String.valueOf(cursor.getInt(lineCdColumn));
+                    String lineCd = String.valueOf(cursor.getInt(LINE_CD_COLUMN));
                     boolean isSingle = checkOverlap(lineCdList, lineCd);
                     if (isSingle) {
                         lineCdList.add(lineCd);
@@ -98,7 +103,7 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
                 // 路線コードで路線検索
                 String[] lineCds = (String[])lineCdList.toArray(new String[0]);
                 Bundle bundle = new Bundle();
-                bundle.putStringArray(MasterColumns.LINE_CD, lineCds);
+                bundle.putStringArray(LINE_CD, lineCds);
                 getActivity().getSupportLoaderManager().initLoader(FIND_LINE_BY_LINE_CD, bundle, this);
                 break;
 
@@ -117,7 +122,7 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
      * 一覧を作成
      */
     private void setListView() {
-        String[] from = {MasterColumns.LINE_NAME};
+        String[] from = {LINE_NAME};
         int[] to = {R.id.select_list_item_title};
 
         mSimpleCursorAdapter = new SimpleCursorAdapter
@@ -134,7 +139,17 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // TODO: 16/09/23 position情報から情報を取得できるか
+
+        // 選択された路線コードを取得
+        Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+        int lineCd = cursor.getInt(LINE_CD_COLUMN);
+
+        // 駅画面へ遷移
+        Bundle bundle = new Bundle();
+        bundle.putInt(LINE_CD, lineCd);
+        Fragment stationFragment = new StationFragment();
+        stationFragment.setArguments(bundle);
+        setFragment(stationFragment);
     }
 
     /**
