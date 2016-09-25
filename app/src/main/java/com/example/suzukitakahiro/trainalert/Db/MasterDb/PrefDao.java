@@ -6,8 +6,12 @@ import android.net.Uri;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
-import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterContentProvider.*;
-import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.*;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_CD;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_NAME;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_TABLE_NAME;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.ROWID;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterContentProvider.AUTHORITY;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterContentProvider.SCHEME;
 
 /**
  * 都道府県Dao
@@ -31,7 +35,7 @@ public class PrefDao {
 
         // 取得する情報
         String[] projection = {
-                "rowid as _id",
+                ROWID,
                 PREF_CD,
                 PREF_NAME
         };

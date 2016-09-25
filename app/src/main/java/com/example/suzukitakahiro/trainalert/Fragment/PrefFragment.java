@@ -1,9 +1,10 @@
 package com.example.suzukitakahiro.trainalert.Fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
@@ -85,6 +86,15 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
      * リスト選択時の処理
      */
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long prefCd) {
+
+        // 選択されたid（prefCdに今回は等しい）の情報を付与して路線画面へ遷移
+        Bundle bundle = new Bundle();
+        bundle.putLong(MasterColumns.PREF_CD, prefCd);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        Fragment lineFragment = new LineFragment();
+        lineFragment.setArguments(bundle);
+        transaction.replace(R.id.fragment_container, lineFragment);
+        transaction.commit();
     }
 }

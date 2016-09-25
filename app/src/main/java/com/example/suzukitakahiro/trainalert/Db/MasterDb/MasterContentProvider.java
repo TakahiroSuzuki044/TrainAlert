@@ -42,9 +42,14 @@ public class MasterContentProvider extends ContentProvider {
         int index = uriPath.indexOf("/");
         String tableName = uriPath.substring(index + 1);
 
+        int selectionArgsLength = 0;
+        if (selectionArgs != null) {
+            selectionArgsLength = selectionArgs.length;
+        }
+
         // selectionが指定されている場合は成型する
         if (selection != null) {
-            getSelection(selection);
+            selection = getSelection(selection, selectionArgsLength);
         }
 
         // カーソル初期位置：−１
@@ -78,12 +83,15 @@ public class MasterContentProvider extends ContentProvider {
     /**
      * 指定されたIDで検索できるようにselectionを成型する
      *
-     * @param selection 削除するID
      * @return 成型したselection
      */
-    private String getSelection(String selection) {
+    private String getSelection(String selection, int length) {
         if (selection != null) {
-            return _ID + " = ?";
+            String selections = selection + " = ?";
+            for (int i = 1; i < length; ++i) {
+                selections = selections + " OR " + selection + " = ?";
+            }
+            return selections;
         } else {
             return null;
         }

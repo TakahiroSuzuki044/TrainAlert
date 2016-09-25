@@ -12,6 +12,7 @@
         android:id="@+id/list_item_latitude"
         android:layout_width="match_parent"
         android:layout_height="15dp"/>
+
     <TextView
         android:id="@+id/list_item_longitude"
         android:layout_width="match_parent"

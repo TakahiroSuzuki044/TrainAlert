@@ -9,6 +9,8 @@ import android.provider.BaseColumns;
  */
 public class MasterColumns implements BaseColumns {
 
+    public static final String ROWID = "rowid as _id";
+
     /** 都道府県テーブル */
     public static final String PREF_TABLE_NAME ="pref";
     public static final String PREF_CD = "pref_cd";
@@ -35,8 +37,8 @@ public class MasterColumns implements BaseColumns {
     public static final int STATION_G_CD_COLUMN = 1;
     public static final String STATION_NAME = "station_name";
     public static final int STATION_NAME_COLUMN = 2;
-    public static final int STATION_LINE_CD = 3;
-    public static final int STATION_PREF_CD = 4;
+    public static final int STATION_LINE_COLUMN = 3;
+    public static final int STATION_PREF_CDLUMN = 4;
     public static final String ST_LATITUDE = "st_latitude";
     public static final int ST_LATITUDE_COLUMN = 5;
     public static final String ST_LONGITUDE = "st_longitude";
