@@ -10,6 +10,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 /**
+ * 都道府県テーブル、路線テーブル、液テーブルをマスターDB内に作成する
+ *
  * @author suzukitakahiro on 16/09/18.
  */
 public class MasterOpenHelper extends SQLiteOpenHelper{

@@ -7,6 +7,9 @@ import com.example.suzukitakahiro.trainalert.Fragment.PrefFragment;
 import com.example.suzukitakahiro.trainalert.R;
 
 /**
+ * 都道府県画面、路線画面、駅画面を表示するアクティビティ
+ * 表示ロジックはフラグメントに移譲している。
+ *
  * @author suzukitakahiro on 16/09/21.
  */
 public class SearchStationActivity extends BaseActivity{

@@ -10,6 +10,8 @@ import android.support.v7.app.AlertDialog;
 import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
 
 /**
+ * アラーム登録した位置情報テーブルの削除確認ダイアログ
+ *
  * @author suzukitakahiro on 2016/09/11.
  */
 public class DeleteDialog extends DialogFragment {
@@ -54,9 +56,6 @@ public class DeleteDialog extends DialogFragment {
 
     /**
      * 削除確認ダイアログを表示する
-     *
-     * @param savedInstanceState
-     * @return
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

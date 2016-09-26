@@ -73,13 +73,12 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
     }
 
     public void checkLocation(Context context) {
-
         mContext = context;
 
         // 現在地チェックフラグを立たせる
         mDecideAcquireStatusFrag = CHECK_LOCATION;
 
-        // 常時チェックのため100メートル且つ1分ごとでチェックを行う
+        // 常時チェックのため100メートル且つ30秒ごとでチェックを行う
         mMinTime = 30000;
         mMinDistance = 50;
 
@@ -117,7 +116,8 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
                     }
 
                     // アラーム位置を登録する
-                    insertLocation(location);
+                    AlarmUtil alarmUtil = new AlarmUtil();
+                    alarmUtil.setAlarmInLocation(mContext, location);
                     stopUpdate();
                 }
 
@@ -125,7 +125,6 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
                 if (mDecideAcquireStatusFrag == CHECK_LOCATION) {
                     checkShowAlert(location);
                 }
-
             }
 
             // プロバイダの利用状況(利用出来ている/できていないなど)情報に変更があったとき
@@ -169,26 +168,6 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
     }
 
     /**
-     * 取得した位置情報をアラーム位置として登録する
-     *
-     * @param location 位置情報
-     * @return DB挿入が成功したかどうか
-     */
-    private boolean insertLocation(Location location) {
-        LocationDao dao = new LocationDao(mContext);
-
-        // TODO: 2016/09/05 運用時には入力されたタイトルを設定する
-        String title = "test";
-
-        // 緯度、経度を格納
-        HashMap<String, Double> hashMap = new HashMap<>();
-        hashMap.put(LATITUDE, location.getLatitude());
-        hashMap.put(LONGITUDE, location.getLongitude());
-
-        return dao.insert(title, hashMap);
-    }
-
-    /**
      * 登録地と比較して200m圏内の場合はアラートを出す
      *
      * @param location
@@ -201,7 +180,6 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
             NotificationUtil notificationUtil = new NotificationUtil();
             notificationUtil.createHeadsUpNotification(mContext);
         }
-
     }
 
     /**

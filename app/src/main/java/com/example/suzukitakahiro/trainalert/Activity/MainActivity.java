@@ -28,7 +28,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         ListView.OnItemLongClickListener, DeleteDialog.DialogCallback, View.OnClickListener {
 
     private static final int FIND_ALL = 0;
-    private static final int FIND_BY_ID = 1;
 
     /** 登録地と現在地の毎時照合がスタートしているか */
     private static boolean sIsStartedLocationSearch = false;
@@ -72,7 +71,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         // メニューごとの挙動を設定
         switch (item.getItemId()) {
 
-            // 駅指定ボタン押下時
+            // 都道府県指定画面へ遷移
             case R.id.select_station:
                 Intent intent = new Intent(this, SearchStationActivity.class);
                 startActivity(intent);
@@ -95,7 +94,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     }
 
     /**
-     * 一覧を作成
+     * 登録したアラーム情報の一覧を作成
      */
     private void setListView() {
         String[] from = {LocationColumns.TITLE};
@@ -119,10 +118,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             // 全件検索
             case FIND_ALL:
                 cursorLoader = locationDao.findAll();
-                break;
-
-            // 1件検索
-            case FIND_BY_ID:
                 break;
         }
         return cursorLoader;
@@ -170,6 +165,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         }
     }
 
+    /**
+     * 位置チェックをスタートする
+     */
     @Override
     public void onClick(View v) {
 

@@ -40,12 +40,13 @@ public class MasterContentProvider extends ContentProvider {
         int index = uriPath.indexOf("/");
         String tableName = uriPath.substring(index + 1);
 
+        // selectionArgsの要素数分の「selection = ?」を生成するために長さを取得
         int selectionArgsLength = 0;
         if (selectionArgs != null) {
             selectionArgsLength = selectionArgs.length;
         }
 
-        // selectionが指定されている場合は成型する
+        // 「selection = ?」に成型する
         if (selection != null) {
             selection = getSelection(selection, selectionArgsLength);
         }
@@ -79,7 +80,8 @@ public class MasterContentProvider extends ContentProvider {
     }
 
     /**
-     * 指定されたIDで検索できるようにselectionを成型する
+     * length分のselection = ? を文字列として生成する
+     * length > 2 の場合はselection = ? OR selection = ? といった具合で連結
      *
      * @return 成型したselection
      */

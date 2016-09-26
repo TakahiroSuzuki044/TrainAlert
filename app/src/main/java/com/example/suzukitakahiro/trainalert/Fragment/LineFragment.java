@@ -26,11 +26,13 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LI
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_CD;
 
 /**
- * @author suzukitakahiro on 16/09/23.
+ * 路線画面フラグメント
  *
  * - 選択された都道府県IDで駅DBの内、IDと被る駅の路線IDを取得
  * - 取得した路線IDの内、重複を取り除く
  * - 重複を取り除いた路線IDで路線テーブル検索をして、路線名/IDを取得、Listで表示
+ *
+ * @author suzukitakahiro on 16/09/23.
  */
 public class LineFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,
         AdapterView.OnItemClickListener {
@@ -153,8 +155,11 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
     }
 
     /**
-     * リストに重複があるかチェックする。
-     * 重複がない場合はtrue。
+     * リスト中に既に同一の文字があるかチェックする。
+     *
+     * @param lineCdList リスト
+     * @param checkLineCd チェックされる文字
+     * @return 重複がない場合はtrue
      */
     private boolean checkOverlap(ArrayList lineCdList, String checkLineCd) {
         int exist = lineCdList.indexOf(checkLineCd);

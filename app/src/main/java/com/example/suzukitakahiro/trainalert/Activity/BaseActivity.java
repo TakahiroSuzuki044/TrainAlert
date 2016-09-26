@@ -16,6 +16,7 @@ public class BaseActivity extends AppCompatActivity {
 
     /**
      * Fragmentを置き換える
+     *
      * @param fragment 置き換えるFragment
      */
     protected void setFragment(Fragment fragment) {

@@ -9,7 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.*;
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LOCATION_TABLE_NAME;
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns._ID;
 
 /**
  * @author suzukitakahiro on 2016/09/04.

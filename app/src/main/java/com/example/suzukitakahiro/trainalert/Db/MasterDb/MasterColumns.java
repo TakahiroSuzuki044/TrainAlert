@@ -4,21 +4,33 @@ import android.provider.BaseColumns;
 
 /**
  * マスターDBのカラム
+ * http://www.ekidata.jp/
  *
  * @author suzukitakahiro on 16/09/19.
  */
 public class MasterColumns implements BaseColumns {
 
+    /** マスターDBのrowidは_idとして取得する */
     public static final String ROWID = "rowid as _id";
 
-    /** 都道府県テーブル */
+    /**
+     *  都道府県テーブル
+     *
+     *  都道府県コード
+     *  都道府県名
+     **/
     public static final String PREF_TABLE_NAME ="pref";
     public static final String PREF_CD = "pref_cd";
     public static final int PREF_CD_COLUMN = 1;
     public static final String PREF_NAME = "pref_name";
     public static final int PREF_NAME_COLUMN = 2;
 
-    /** 路線テーブル */
+    /**
+     * 路線テーブル
+     *
+     * 路線コード
+     * 路線名
+     **/
     public static final String LINE_TABEL_NAME = "line";
     public static final String LINE_CD = "line_cd";
     public static final int LINE_CD_COLUMN = 1;
@@ -27,13 +39,18 @@ public class MasterColumns implements BaseColumns {
 
     /**
      * 駅テーブル
-     * STATION_LINE_CDは路線テーブルの外部キー
-     * STATION_PREF_CDは都道府県テーブルの外部キー
+     *
+     * 駅コード
+     * 駅名
+     * 駅グループコード（路線が複数ある駅で識別するために利用する）
+     * 都道府県コード
+     * 路線コード
+     * 経度
+     * 緯度
      */
     public static final String STATION_TABLE_NAME = "station";
     public static final String STATION_CD = "station_cd";
     public static final int STATION_CD_COLUMN = 1;
-    public static final String STATION_G_CD = "station_g_cd";
     public static final String STATION_NAME = "station_name";
     public static final int STATION_NAME_COLUMN = 2;
     public static final String ST_LATITUDE = "st_latitude";

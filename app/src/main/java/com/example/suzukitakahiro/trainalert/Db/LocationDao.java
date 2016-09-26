@@ -17,6 +17,8 @@ import static com.example.suzukitakahiro.trainalert.Db.LocationContentProvider.A
 import static com.example.suzukitakahiro.trainalert.Db.LocationContentProvider.SCHEME;
 
 /**
+ * アラーム登録した位置情報テーブルのDao
+ *
  * @author suzukitakahiro on 2016/09/04.
  */
 public class LocationDao {

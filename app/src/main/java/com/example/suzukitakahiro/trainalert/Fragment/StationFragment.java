@@ -142,7 +142,12 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
         getActivity().getSupportLoaderManager().initLoader(FIND_STATION_BY_STATION_ID, bundle, this);
     }
 
-
+    /**
+     * 駅情報をアラーム登録する
+     *
+     * @param cursor 登録する駅情報のカーソル
+     * @return 登録出来た場合true
+     */
     private boolean insertStationLocation(Cursor cursor) {
         cursor.moveToNext();
         String stationName = cursor.getString(STATION_NAME_COLUMN);

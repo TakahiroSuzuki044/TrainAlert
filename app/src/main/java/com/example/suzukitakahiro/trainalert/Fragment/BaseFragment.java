@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentTransaction;
 import com.example.suzukitakahiro.trainalert.R;
 
 /**
+ * ベースフラグメント
+ *
  * @author  suzukitakahiro on 2016/07/21.
  */
 public class BaseFragment extends Fragment {

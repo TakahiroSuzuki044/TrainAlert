@@ -18,6 +18,8 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterContentPro
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterContentProvider.SCHEME;
 
 /**
+ * 駅Dao
+ *
  * @author suzukitakahiro on 16/09/20.
  */
 public class StationDao {
@@ -51,7 +53,7 @@ public class StationDao {
 
 
     /**
-     * 路線CDで駅テーブルからレコード情報を取得する
+     * 路線CDで駅テーブルから駅コード/駅名を取得する
      * 一覧で表示するために利用するため、CDとNAMEしか取得しない
      */
     public Loader<Cursor> findByLineCd(int lineCd) {
@@ -72,7 +74,7 @@ public class StationDao {
     }
 
     /**
-     * 駅CDで一件レコードを取得する
+     * 駅CDで駅テーブルから駅コード/駅名/経度/緯度を取得する
      * 緯度経度を登録するために利用する
      */
     public Loader<Cursor> findByStationCd(int stationCd) {
