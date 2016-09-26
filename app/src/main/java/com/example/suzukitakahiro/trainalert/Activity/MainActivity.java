@@ -98,11 +98,11 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
      * 一覧を作成
      */
     private void setListView() {
-        String[] from = {LocationColumns.TITLE, LocationColumns.LATITUDE, LocationColumns.LONGITUDE};
-        int[] to = {R.id.select_list_item_title, R.id.list_item_latitude, R.id.list_item_longitude};
+        String[] from = {LocationColumns.TITLE};
+        int[] to = {R.id.main_list_item_title};
 
         mSimpleCursorAdapter = new SimpleCursorAdapter
-                (this, R.layout.list_item_location, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+                (this, R.layout.list_item_main, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         ListView listView = (ListView)findViewById(R.id.location_list_view);
         listView.setAdapter(mSimpleCursorAdapter);

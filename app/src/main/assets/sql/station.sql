@@ -1,5 +1,5 @@
 BEGIN TRANSACTION;
-CREATE TABLE station (station_cd int,station_g_cd int,station_name text,line_cd int,pref_cd int,st_longitude double,st_latitude double);
+CREATE TABLE station (station_cd int,station_g_cd int,station_name text,line_cd int,pref_cd int,st_latitude double,st_longitude double);
 INSERT INTO station VALUES(1110101,1110101,'函館',11101,1,41.773709,140.726413);
 INSERT INTO station VALUES(1110102,1110102,'五稜郭',11101,1,41.803557,140.733539);
 INSERT INTO station VALUES(1110103,1110103,'桔梗',11101,1,41.846457,140.722952);

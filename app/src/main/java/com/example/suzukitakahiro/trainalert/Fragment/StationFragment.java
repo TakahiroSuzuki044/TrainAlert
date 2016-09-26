@@ -12,12 +12,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns;
+import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.StationDao;
 import com.example.suzukitakahiro.trainalert.R;
 
-import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.*;
+import java.util.HashMap;
+
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LATITUDE;
+import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LONGITUDE;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LINE_CD;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_CD;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_CD_COLUMN;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_NAME;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_NAME_COLUMN;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.ST_LATITUDE_COLUMN;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.ST_LONGITUDE_COLUMN;
 
 /**
  * 駅指定画面フラグメント
@@ -83,6 +94,15 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
 
             // 緯度/経度を取得して登録する
             case FIND_STATION_BY_STATION_ID:
+                boolean isSuccess = insertStationLocation(cursor);
+                if (isSuccess) {
+                    Toast.makeText(mContext, cursor.getString(STATION_NAME_COLUMN) + "駅を登録しました", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, "登録に失敗しました", Toast.LENGTH_SHORT).show();
+                }
+
+                // メイン画面に戻る
+                getActivity().finish();
                 break;
         }
     }
@@ -120,5 +140,19 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
         Bundle bundle = new Bundle();
         bundle.putInt(STATION_CD, stationCd);
         getActivity().getSupportLoaderManager().initLoader(FIND_STATION_BY_STATION_ID, bundle, this);
+    }
+
+
+    private boolean insertStationLocation(Cursor cursor) {
+        cursor.moveToNext();
+        String stationName = cursor.getString(STATION_NAME_COLUMN);
+
+        // 緯度、経度を格納
+        HashMap<String, Double> hashMap = new HashMap<>();
+        hashMap.put(LATITUDE, cursor.getDouble(ST_LATITUDE_COLUMN));
+        hashMap.put(LONGITUDE, cursor.getDouble(ST_LONGITUDE_COLUMN));
+
+        LocationDao dao = new LocationDao(getActivity());
+        return dao.insert(stationName, hashMap);
     }
 }
