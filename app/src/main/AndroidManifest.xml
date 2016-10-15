@@ -44,6 +44,9 @@
             </intent-filter>
         </receiver>
 
+        <!-- 位置情報を常時取得するサービス -->
+        <service android:name=".Service.LocationService"/>
+
         <!-- アラーム位置プロバイダの登録 -->
         <provider
             android:authorities="com.example.suzukitakahiro.trainalert.LocationContentProvider"

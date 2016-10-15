@@ -235,7 +235,4 @@ public class LocationUtil implements DialogInterface.OnCancelListener {
         // 現在地取得を停止する
         stopUpdate();
     }
-
-    // TODO: 2016/09/12 Networkが取得出来ない場合はGPSでチェックするように変更
-    // TODO: 2016/09/12 電車に乗ったと判断したときの毎時チェックも必要
 }

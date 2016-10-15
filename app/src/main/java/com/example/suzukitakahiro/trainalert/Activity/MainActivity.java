@@ -22,6 +22,7 @@ import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
 import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.R;
+import com.example.suzukitakahiro.trainalert.Service.LocationService;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 
 public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>,
@@ -38,6 +39,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent locationService = new Intent(this, LocationService.class);
+        startService(locationService);
 
         Button button = (Button) findViewById(R.id.start_button);
         button.setOnClickListener(this);
