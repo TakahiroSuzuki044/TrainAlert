@@ -1,12 +1,16 @@
 package com.example.suzukitakahiro.trainalert.Service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.NotificationUtil;
 
 /**
  * 位置情報取得サービス
@@ -38,10 +42,14 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "onStartCommand");
+        LocationUtil locationUtil = LocationUtil.getInstance(getApplicationContext());
+
+        // 常時チェックのため100メートル且つ30秒ごとでチェックを行う
+        long minTime = 30000;
+        float minDistance = 100;
 
         // 位置情報取得スタート
-        LocationUtil locationUtil = new LocationUtil();
-        locationUtil.checkLocation(this);
+        locationUtil.acquireLocation(minTime, minDistance, mLocationCallback);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -53,4 +61,29 @@ public class LocationService extends Service {
         Log.v(TAG, "onDestroy");
         super.onDestroy();
     }
+
+    /**
+     * 現在地取得用のコールバック
+     */
+    private LocationUtil.LocationCallback mLocationCallback = new LocationUtil.LocationCallback() {
+
+        /**
+         * 登録地と比較して200m圏内の場合はアラートを出す
+         */
+        @Override
+        public void Success(Location location) {
+            Context context = getApplicationContext();
+            LocationDao locationDao = new LocationDao(context);
+            boolean isLess200meters = locationDao.collateLocationDb(location);
+
+            if (isLess200meters) {
+                NotificationUtil notificationUtil = new NotificationUtil();
+                notificationUtil.createHeadsUpNotification(context);
+            }
+        }
+
+        @Override
+        public void Error() {
+        }
+    };
 }
