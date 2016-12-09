@@ -51,7 +51,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         setContentView(R.layout.activity_main);
 
         Button button = (Button) findViewById(R.id.start_button);
-        button.setOnClickListener(this);
+        if (button != null) {
+            button.setOnClickListener(this);
+        }
 
         // ツールバーの設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -133,9 +135,11 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 (this, R.layout.list_item_main, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         ListView listView = (ListView) findViewById(R.id.location_list_view);
-        listView.setAdapter(mSimpleCursorAdapter);
+        if (listView != null) {
+            listView.setAdapter(mSimpleCursorAdapter);
+            listView.setOnItemLongClickListener(this);
+        }
 
-        listView.setOnItemLongClickListener(this);
     }
 
     @Override
