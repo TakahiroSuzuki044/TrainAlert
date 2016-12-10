@@ -3,5 +3,26 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/start_button"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_alignParentBottom="true"
+            android:text="チェックをスタート"
+            android:textSize="20sp"
+            android:background="@color/gray_black"/>
+
+        <ListView
+            android:id="@+id/location_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_above="@id/start_button"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

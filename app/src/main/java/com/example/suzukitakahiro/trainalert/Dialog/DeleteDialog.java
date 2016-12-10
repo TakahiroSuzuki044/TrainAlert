@@ -1,9 +1,9 @@
 package com.example.suzukitakahiro.trainalert.Dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
@@ -15,8 +15,11 @@ import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
  * @author suzukitakahiro on 2016/09/11.
  */
 public class DeleteDialog extends DialogFragment {
-    /** コールバック用リスナ */
-    DialogCallback mListener;
+
+    /**
+     * コールバック用リスナ
+     */
+    public static DialogCallback sCallback;
 
     /**
      * コールバック用のインターフェース
@@ -31,7 +34,8 @@ public class DeleteDialog extends DialogFragment {
      * @param id 削除するid
      * @return AskDeleteDialog
      */
-    public static DeleteDialog getInstance(long id) {
+    public static DeleteDialog getInstance(long id, DialogCallback callback) {
+        sCallback = callback;
         DeleteDialog deleteDialog = new DeleteDialog();
         Bundle bundle = new Bundle();
         bundle.putLong(LocationColumns._ID, id);
@@ -40,23 +44,9 @@ public class DeleteDialog extends DialogFragment {
     }
 
     /**
-     * クラス生成時にリスナを生成する
-     *
-     * @param activity リスナ
-     */
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof DialogCallback) {
-            mListener = (DialogCallback) activity;
-        } else {
-            mListener = null;
-        }
-    }
-
-    /**
      * 削除確認ダイアログを表示する
      */
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -69,8 +59,8 @@ public class DeleteDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
 
                         // リスナとidが存在する場合
-                        if (mListener != null && id != -1) {
-                            mListener.onCallback(id);
+                        if (sCallback != null && id != -1) {
+                            sCallback.onCallback(id);
                         }
                     }
                 });
