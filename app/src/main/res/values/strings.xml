@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">激おこ</string>
-    <string name="setStation">駅を指定</string>
-    <string name="setTime">時間を指定</string>
-    <string name="setLocation">現在地を指定</string>
+    <string name="set_station">駅を指定</string>
+    <string name="set_time">時間を指定</string>
+    <string name="set_location">現在地を指定</string>
+    <string name="started_check_location">アラームセット中</string>
+    <string name="not_start_check_location">チェックをスタート</string>
 
     <string name="api_key_for_google_map">AIzaSyDbhaK7f2ZvOwSGqRI9h7R-HmYQaQoXDcw</string>
 </resources>

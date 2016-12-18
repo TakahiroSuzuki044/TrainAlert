@@ -30,6 +30,7 @@ public class LocationService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.v(TAG, "onBind");
         return null;
     }
 
@@ -45,8 +46,8 @@ public class LocationService extends Service {
         LocationUtil locationUtil = LocationUtil.getInstance(getApplicationContext());
 
         // 常時チェックのため100メートル且つ30秒ごとでチェックを行う
-        long minTime = 30000;
-        float minDistance = 100;
+        long minTime = 10000;
+        float minDistance = 50;
 
         // 位置情報取得スタート
         locationUtil.acquireLocation(minTime, minDistance, mLocationCallback);
@@ -72,6 +73,7 @@ public class LocationService extends Service {
          */
         @Override
         public void Success(Location location) {
+            Log.d(TAG, "Success");
             Context context = getApplicationContext();
             LocationDao locationDao = new LocationDao(context);
             boolean isLess200meters = locationDao.collateLocationDb(location);
@@ -79,11 +81,15 @@ public class LocationService extends Service {
             if (isLess200meters) {
                 NotificationUtil notificationUtil = new NotificationUtil();
                 notificationUtil.createHeadsUpNotification(context);
+
+                stopSelf();
             }
         }
 
         @Override
         public void Error(int errorCode) {
+            Log.d(TAG, "Error");
+            stopSelf();
         }
     };
 }

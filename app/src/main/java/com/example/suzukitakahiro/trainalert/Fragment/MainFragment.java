@@ -20,6 +20,7 @@ import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Service.LocationService;
+import com.example.suzukitakahiro.trainalert.Uitl.ServiceUtil;
 
 /**
  * @author suzukitakahiro on 2016/07/21.
@@ -33,6 +34,8 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
 
     private View mView;
 
+    private Button mLocationCheckButton;
+
     /**
      * DB登録駅の全件検索
      */
@@ -42,9 +45,21 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        Button button = (Button) mView.findViewById(R.id.start_button);
-        if (button != null) {
-            button.setOnClickListener(this);
+        // 位置情報取得サービスが実行中か調べる
+        boolean isStartedCheckLocation =
+                ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
+
+        mLocationCheckButton = (Button) mView.findViewById(R.id.start_button);
+
+        if (mLocationCheckButton != null) {
+            mLocationCheckButton.setOnClickListener(this);
+
+            // 位置情報取得サービスの状態でボタンテキストを変化させる
+            if (isStartedCheckLocation) {
+                mLocationCheckButton.setText(getString(R.string.started_check_location));
+            } else {
+                mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+            }
         }
 
         // リストをセット
@@ -139,8 +154,20 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
      */
     @Override
     public void onClick(View v) {
-        Intent locationService = new Intent(getContext(), LocationService.class);
-        getActivity().startService(locationService);
-        Toast.makeText(getActivity(), "毎時チェックを開始しました", Toast.LENGTH_SHORT).show();
+        boolean isStartedCheckLocation =
+                ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
+
+        Intent intent = new Intent(getContext(), LocationService.class);
+
+        // サービス未実行時は実行に、実行時は停止する
+        if (isStartedCheckLocation) {
+            getActivity().stopService(intent);
+            mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+            Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
+        } else {
+            getActivity().startService(intent);
+            mLocationCheckButton.setText(getString(R.string.started_check_location));
+            Toast.makeText(getActivity(), "チェックを開始しました", Toast.LENGTH_SHORT).show();
+        }
     }
 }
