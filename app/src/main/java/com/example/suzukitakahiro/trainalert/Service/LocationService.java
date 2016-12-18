@@ -83,7 +83,7 @@ public class LocationService extends Service {
         }
 
         @Override
-        public void Error() {
+        public void Error(int errorCode) {
         }
     };
 }

@@ -1,5 +1,6 @@
 package com.example.suzukitakahiro.trainalert.Activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,7 +34,6 @@ import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 
 public class MainActivity extends BaseActivity {
 
-
     private ProgressDialog mProgressDialog;
 
     /**
@@ -41,14 +41,15 @@ public class MainActivity extends BaseActivity {
      */
     private static boolean sIsStartedLocationSearch = false;
 
-
     private LocationUtil mLocationUtil;
+
+    private Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mActivity = this;
 
         // ツールバーの設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -101,15 +102,13 @@ public class MainActivity extends BaseActivity {
                 // 即時現在地を取得する
                 long minTime = 0;
                 float minDistance = 0;
-                mLocationUtil.acquireLocation(minTime, minDistance, mLocationCallback);
+                boolean isObtain = mLocationUtil.acquireLocation(minTime, minDistance, mLocationCallback);
 
-                // 現在地取得中はダイアログを表示する
-
-                DialogUtil dialogUtil = new DialogUtil();
-                mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
-
-                Toast.makeText(this, "毎時チェックを開始しました", Toast.LENGTH_SHORT).show();
-
+                if (isObtain) {
+                    // 現在地取得中はダイアログを表示する
+                    DialogUtil dialogUtil = new DialogUtil();
+                    mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -137,8 +136,19 @@ public class MainActivity extends BaseActivity {
         }
 
         @Override
-        public void Error() {
+        public void Error(int errorCode) {
+            switch (errorCode) {
+                case LocationUtil.INVALID_GET_LOCATION:
+                    mLocationUtil.showImproveLocationDialog(mActivity);
+            }
+            // ダイアログが表示されていた場合消す
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
 
+            // 現在地取得を停止する
+            mLocationUtil.stopUpdate();
+            sIsStartedLocationSearch = false;
         }
     };
 
@@ -152,6 +162,7 @@ public class MainActivity extends BaseActivity {
 
             // 現在地取得を停止する
             mLocationUtil.stopUpdate();
+            sIsStartedLocationSearch = false;
         }
     };
 }
