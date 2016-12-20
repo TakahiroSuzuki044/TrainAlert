@@ -78,9 +78,15 @@ public class LocationService extends Service {
             LocationDao locationDao = new LocationDao(context);
             boolean isLess200meters = locationDao.collateLocationDb(location);
 
+            // 200ｍより近いので通知する
             if (isLess200meters) {
                 NotificationUtil notificationUtil = new NotificationUtil();
                 notificationUtil.createHeadsUpNotification(context);
+
+                LocationUtil util = LocationUtil.getInstance(context);
+
+                // 位置情報の取得を停止
+                util.stopUpdate();
 
                 stopSelf();
             }
@@ -89,6 +95,10 @@ public class LocationService extends Service {
         @Override
         public void Error(int errorCode) {
             Log.d(TAG, "Error");
+            LocationUtil util = LocationUtil.getInstance(getApplicationContext());
+
+            // 位置情報の取得を停止
+            util.stopUpdate();
             stopSelf();
         }
     };
