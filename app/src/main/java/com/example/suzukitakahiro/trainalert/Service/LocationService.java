@@ -3,6 +3,7 @@ package com.example.suzukitakahiro.trainalert.Service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -12,6 +13,11 @@ import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.NotificationUtil;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.*;
+
 /**
  * 位置情報取得サービス
  *
@@ -20,6 +26,7 @@ import com.example.suzukitakahiro.trainalert.Uitl.NotificationUtil;
 public class LocationService extends Service {
 
     private static final String TAG = "Service_Tag";
+
 
     @Override
     public void onCreate() {
@@ -43,6 +50,12 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "onStartCommand");
+
+        // 現在位置情報の初期化
+        long initLatitude = 0;
+        long initLongitude = 0;
+        saveLocationAtPreference(initLatitude, initLongitude);
+
         LocationUtil locationUtil = LocationUtil.getInstance(getApplicationContext());
 
         // 常時チェックのため100メートル且つ30秒ごとでチェックを行う
@@ -51,6 +64,10 @@ public class LocationService extends Service {
 
         // 位置情報取得スタート
         locationUtil.acquireLocation(minTime, minDistance, mLocationCallback);
+
+        // 10秒ごとにチェックをスタート
+        start10SecondsLocationCheck();
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -74,22 +91,9 @@ public class LocationService extends Service {
         @Override
         public void Success(Location location) {
             Log.d(TAG, "Success");
-            Context context = getApplicationContext();
-            LocationDao locationDao = new LocationDao(context);
-            boolean isLess200meters = locationDao.collateLocationDb(location);
 
-            // 200ｍより近いので通知する
-            if (isLess200meters) {
-                NotificationUtil notificationUtil = new NotificationUtil();
-                notificationUtil.createHeadsUpNotification(context);
-
-                LocationUtil util = LocationUtil.getInstance(context);
-
-                // 位置情報の取得を停止
-                util.stopUpdate();
-
-                stopSelf();
-            }
+            // 現在位置情報を更新
+            saveLocationAtPreference(location.getLatitude(), location.getLongitude());
         }
 
         @Override
@@ -102,4 +106,71 @@ public class LocationService extends Service {
             stopSelf();
         }
     };
+
+    /**
+     * 10秒ごとに現在位置と登録位置情報の距離差が200ｍ以内かチェックする。
+     * 200ｍ以内の場合は通知を出す。
+     */
+    private void start10SecondsLocationCheck() {
+
+        // 初期化
+        final Timer timer = new Timer();
+        // 0秒後にタスクをスケジューリング
+        long startTime = 0;
+        // 10秒間隔でタスクを実行させる
+        long lapMilliTime = 10000;
+
+        // 10秒ごとに現在位置と登録位置距離差を比較する
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                // 最新の現在位置情報を保持データから取得
+                SharedPreferences  sp = getSharedPreferences(PREF_KEY_LOCATION, MODE_PRIVATE);
+                long lLatitude = sp.getLong(PREF_KEY_LATITUDE, 0);
+                long lLongitude = sp.getLong(PREF_KEY_LONGITUDE, 0);
+                Double latitude = Double.longBitsToDouble(lLatitude);
+                Double longitude = Double.longBitsToDouble(lLongitude);
+
+                Context context = getApplicationContext();
+                LocationDao locationDao = new LocationDao(context);
+                boolean isLess200meters = locationDao.collateLocationDb(latitude, longitude);
+
+                // 200ｍ以内のため通知する
+                if (isLess200meters) {
+                    NotificationUtil notificationUtil = new NotificationUtil();
+                    notificationUtil.createHeadsUpNotification(context);
+
+                    LocationUtil util = LocationUtil.getInstance(context);
+
+                    // 位置情報の取得を停止
+                    util.stopUpdate();
+                    // タイマーの停止
+                    timer.cancel();
+                    // サービスの停止
+                    stopSelf();
+                }
+            }
+        }, startTime, lapMilliTime);
+    }
+
+    /**
+     * プリファレンスで位置情報を保存する
+     *
+     * @param latitude      緯度
+     * @param longitude     経度
+     */
+    private void saveLocationAtPreference(double latitude, double longitude) {
+
+        // プリファレンスではダブル型を保存できないのでデータ型変換
+        long lLatitude = Double.doubleToLongBits(latitude);
+        long lLongitude = Double.doubleToLongBits(longitude);
+
+        // 保存
+        SharedPreferences  sp = getSharedPreferences(PREF_KEY_LOCATION, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putLong(PREF_KEY_LATITUDE, lLatitude);
+        editor.putLong(PREF_KEY_LONGITUDE, lLongitude);
+        editor.apply();
+    }
 }

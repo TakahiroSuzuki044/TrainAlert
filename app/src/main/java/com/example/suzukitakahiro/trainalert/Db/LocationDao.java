@@ -38,26 +38,31 @@ public class LocationDao {
 
     /**
      * LocationDBと照合し200m圏内の場合はアラートを促す
+     *
+     * @param currentLatitude       現在の緯度
+     * @param currentLongitude      現在の経度
+     * @return 登録位置のいずれかと現在位置が200ｍ圏内の場合、True
      */
-    public boolean collateLocationDb(Location location) {
+    public boolean collateLocationDb(double currentLatitude, double currentLongitude) {
         Cursor cursor = findAllReturnCursor();
 
-        Double latitude;
-        Double longitude;
+        // アラーム登録をしている位置情報
+        Double registerLatitude;
+        Double registerLongitude;
 
         while (cursor.moveToNext()) {
 
             // DBの列を指定して値を取得
-            latitude = cursor.getDouble(LATITUDE_COLUMN);
-            longitude = cursor.getDouble(LONGITUDE_COLUMN);
+            registerLatitude = cursor.getDouble(LATITUDE_COLUMN);
+            registerLongitude = cursor.getDouble(LONGITUDE_COLUMN);
 
             // {二点間距離[m], 始点から見た方位角, 終点から見た方位角}が格納される
             float[] distance = new float[3];
 
-            Location.distanceBetween(latitude, longitude, location.getLatitude(), location.getLongitude(), distance);
+            Location.distanceBetween(registerLatitude, registerLongitude, currentLatitude, currentLongitude, distance);
 
             // 現在地と登録地の距離が200m圏内の場合はアラートを促す
-            if (distance[0] < 200) {
+            if (distance[0] <= 200) {
                 return true;
             }
         }
