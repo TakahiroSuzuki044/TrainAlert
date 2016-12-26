@@ -13,9 +13,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+
+import java.util.Date;
 
 /**
  * @author suzukitakahiro on 2016/08/28.
@@ -24,6 +27,7 @@ import android.util.Log;
  */
 public class LocationUtil {
 
+    private static final String TAG = "LocationUtil";
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private static Context sContext;
@@ -66,6 +70,7 @@ public class LocationUtil {
      * @param callback    位置情報取得時のコールバック
      */
     public boolean acquireLocation(long minTime, float minDistance, LocationCallback callback) {
+        Log.d(TAG, "acquireLocation");
         mCallback = callback;
         mLocationManager = (LocationManager) sContext.getSystemService(Context.LOCATION_SERVICE);
 
@@ -75,15 +80,6 @@ public class LocationUtil {
             return false;
         }
 
-        Criteria criteria = new Criteria();
-        // 方位
-        criteria.setBearingRequired(false);
-        // 速度
-        criteria.setSpeedRequired(false);
-        // 高度
-        criteria.setAltitudeRequired(false);
-        boolean isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        boolean isGpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         mLocationListener = new LocationListener() {
 
             // 現在位置情報が更新
@@ -107,32 +103,17 @@ public class LocationUtil {
             public void onProviderDisabled(String provider) {
             }
         };
-        String provider = mLocationManager.getBestProvider(criteria, true);
+        String provider = getProvider();
 
-        // 位置情報の取得が可能な設定か
-        if (!isGpsEnabled || !isNetworkEnabled) {
-            mCallback.Error(INVALID_GET_LOCATION);
-            return false;
-        }
-
-        // ランタイムパーミッションチェック
-        if (Build.VERSION.SDK_INT >= 23
-                && ActivityCompat.checkSelfPermission
-                (sContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        // GPSもネットワーク位置も利用できない場合
+        if (!checkEnableGps()) {
             mCallback.Error(INVALID_GET_LOCATION);
             return false;
         }
 
         // 現在位置の取得処理を実行する
         mLocationManager.requestLocationUpdates(provider, minTime, minDistance, mLocationListener);
-        Log.d("locationUtil", "start_location_search");
+        Log.d(TAG, "start_location_search");
         return true;
     }
 
@@ -169,20 +150,76 @@ public class LocationUtil {
      */
     public void stopUpdate() {
         if (mLocationManager != null) {
-            if (ActivityCompat.checkSelfPermission(sContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
 
             // 現在位置を取得を停止させる
             mLocationManager.removeUpdates(mLocationListener);
-            Log.d("locationUtil", "stop_location_search");
+            Log.d(TAG, "stop_location_search");
         }
+    }
+
+    /**
+     * 最適なプロバイダを返却する
+     *
+     * @return プロバイダ
+     */
+    private String getProvider() {
+        Criteria criteria = new Criteria();
+        // 方位
+        criteria.setBearingRequired(false);
+        // 速度
+        criteria.setSpeedRequired(false);
+        // 高度
+        criteria.setAltitudeRequired(false);
+
+        return mLocationManager.getBestProvider(criteria, true);
+    }
+
+    /**
+     * GPSまたはネットワーク位置情報の取得が可能かをチェックする
+     *
+     * @return 位置情報が取得可能の場合、True
+     */
+    public boolean checkEnableGps() {
+        mLocationManager = (LocationManager) sContext.getSystemService(Context.LOCATION_SERVICE);
+
+        // 位置情報機能非搭載端末の場合
+        if (mLocationManager == null) {
+            // 何も行わない
+            return false;
+        }
+
+        boolean isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean isGpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        return isGpsEnabled || isNetworkEnabled;
+    }
+
+
+    /**
+     * 最後に取得した位置情報を返却する
+     *
+     * @return 現在時間から逆算して5分以内の場合のみLocationを返却し、それ以外はNullを返す
+     */
+    @Nullable
+    public Location acquireLastLocation() {
+        mLocationManager = (LocationManager) sContext.getSystemService(Context.LOCATION_SERVICE);
+
+        // 位置情報機能非搭載端末の場合
+        if (mLocationManager == null) {
+            // 何も行わない
+            return null;
+        }
+        String provider = getProvider();
+
+        Location lastLocation = mLocationManager.getLastKnownLocation(provider);
+        if (lastLocation == null) {
+            return null;
+        }
+
+        boolean isWithin5minutes = (new Date().getTime() - lastLocation.getTime()) <= (5 * 60 * 1000L);
+        if (isWithin5minutes) {
+            return lastLocation;
+        }
+        return null;
     }
 }

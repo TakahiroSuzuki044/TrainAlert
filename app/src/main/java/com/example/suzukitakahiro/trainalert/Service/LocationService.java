@@ -25,8 +25,8 @@ import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.*;
  */
 public class LocationService extends Service {
 
-    private static final String TAG = "Service_Tag";
-
+    private static final String TAG = "LocationService";
+    private Timer mTimer;
 
     @Override
     public void onCreate() {
@@ -76,8 +76,16 @@ public class LocationService extends Service {
      */
     @Override
     public void onDestroy() {
-        Log.v(TAG, "onDestroy");
         super.onDestroy();
+        Log.v(TAG, "onDestroy");
+        LocationUtil util = LocationUtil.getInstance(getApplicationContext());
+
+        // 位置情報の取得を停止
+        util.stopUpdate();
+        // タイマーの停止
+        if (mTimer != null) {
+            mTimer.cancel();
+        }
     }
 
     /**
@@ -99,10 +107,6 @@ public class LocationService extends Service {
         @Override
         public void Error(int errorCode) {
             Log.d(TAG, "Error");
-            LocationUtil util = LocationUtil.getInstance(getApplicationContext());
-
-            // 位置情報の取得を停止
-            util.stopUpdate();
             stopSelf();
         }
     };
@@ -114,14 +118,14 @@ public class LocationService extends Service {
     private void start10SecondsLocationCheck() {
 
         // 初期化
-        final Timer timer = new Timer();
+        mTimer = new Timer();
         // 0秒後にタスクをスケジューリング
         long startTime = 0;
         // 10秒間隔でタスクを実行させる
         long lapMilliTime = 10000;
 
         // 10秒ごとに現在位置と登録位置距離差を比較する
-        timer.schedule(new TimerTask() {
+        mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
 
@@ -141,12 +145,6 @@ public class LocationService extends Service {
                     NotificationUtil notificationUtil = new NotificationUtil();
                     notificationUtil.createHeadsUpNotification(context);
 
-                    LocationUtil util = LocationUtil.getInstance(context);
-
-                    // 位置情報の取得を停止
-                    util.stopUpdate();
-                    // タイマーの停止
-                    timer.cancel();
                     // サービスの停止
                     stopSelf();
                 }

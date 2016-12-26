@@ -4,30 +4,16 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
-import com.example.suzukitakahiro.trainalert.Db.LocationDao;
-import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
 import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.Fragment.MainFragment;
 import com.example.suzukitakahiro.trainalert.R;
-import com.example.suzukitakahiro.trainalert.Service.LocationService;
 import com.example.suzukitakahiro.trainalert.Uitl.AlarmUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.DialogUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
@@ -99,15 +85,29 @@ public class MainActivity extends BaseActivity {
                 sIsStartedLocationSearch = true;
                 mLocationUtil = LocationUtil.getInstance(getApplicationContext());
 
-                // 即時現在地を取得する
-                long minTime = 0;
-                float minDistance = 0;
-                boolean isObtain = mLocationUtil.acquireLocation(minTime, minDistance, mLocationCallback);
+                // まず現在時間から逆算して5分以内に取得した位置情報があるか確認する
+                Location lastLocation = mLocationUtil.acquireLastLocation();
 
-                if (isObtain) {
-                    // 現在地取得中はダイアログを表示する
-                    DialogUtil dialogUtil = new DialogUtil();
-                    mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
+                // 5分以内に取得した位置情報がない場合は普通に取得する
+                if (lastLocation == null) {
+
+                    // 即時現在地を取得する
+                    long minTime = 0;
+                    float minDistance = 0;
+                    boolean isObtain = mLocationUtil.acquireLocation(minTime, minDistance, mLocationCallback);
+
+                    if (isObtain) {
+
+                        // 現在地取得中はダイアログを表示する
+                        DialogUtil dialogUtil = new DialogUtil();
+                        mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
+                    }
+                } else {
+
+                    // アラーム位置を登録する
+                    AlarmUtil alarmUtil = new AlarmUtil();
+                    alarmUtil.setAlarmInLocation(getApplicationContext(), lastLocation);
+                    sIsStartedLocationSearch = false;
                 }
                 break;
         }
@@ -133,6 +133,7 @@ public class MainActivity extends BaseActivity {
 
             // 現在地取得を停止する
             mLocationUtil.stopUpdate();
+            sIsStartedLocationSearch = false;
         }
 
         @Override

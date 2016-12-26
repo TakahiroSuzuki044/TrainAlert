@@ -7,6 +7,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Service.LocationService;
+import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.ServiceUtil;
 
 /**
@@ -29,6 +31,8 @@ import com.example.suzukitakahiro.trainalert.Uitl.ServiceUtil;
  */
 public class MainFragment extends BaseFragment implements ListView.OnItemLongClickListener,
         View.OnClickListener, DeleteDialog.DialogCallback {
+
+    private static final String TAG = "MainFragment";
 
     private SimpleCursorAdapter mSimpleCursorAdapter;
 
@@ -68,6 +72,21 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
         // 全件検索
         getActivity().getSupportLoaderManager().initLoader(FIND_ALL, null, mLoaderCallbacks);
         return mView;
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
+        boolean isStartedCheckLocation =
+                ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
+
+        // サービス状況によって表示を変更する
+        if (isStartedCheckLocation) {
+            mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+        } else {
+            mLocationCheckButton.setText(getString(R.string.started_check_location));
+        }
     }
 
     /**
@@ -154,9 +173,19 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
      */
     @Override
     public void onClick(View v) {
+        LocationUtil util = LocationUtil.getInstance(getContext());
+
+        // 位置情報が取得可能か
+        boolean isEnableGps = util.checkEnableGps();
+
+        // 位置情報取得不可の場合は改善ダイアログを表示する
+        if (!isEnableGps) {
+            util.showImproveLocationDialog(getActivity());
+            return;
+        }
+
         boolean isStartedCheckLocation =
                 ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
-
         Intent intent = new Intent(getContext(), LocationService.class);
 
         // サービス未実行時は実行に、実行時は停止する
