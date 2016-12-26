@@ -48,22 +48,9 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        // 位置情報取得サービスが実行中か調べる
-        boolean isStartedCheckLocation =
-                ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
-
         mLocationCheckButton = (Button) mView.findViewById(R.id.start_button);
-
         if (mLocationCheckButton != null) {
             mLocationCheckButton.setOnClickListener(this);
-
-            // 位置情報取得サービスの状態でボタンテキストを変化させる
-            if (isStartedCheckLocation) {
-                mLocationCheckButton.setText(getString(R.string.started_check_location));
-            } else {
-                mLocationCheckButton.setText(getString(R.string.not_start_check_location));
-            }
         }
 
         // リストをセット
@@ -83,9 +70,9 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
 
         // サービス状況によって表示を変更する
         if (isStartedCheckLocation) {
-            mLocationCheckButton.setText(getString(R.string.not_start_check_location));
-        } else {
             mLocationCheckButton.setText(getString(R.string.started_check_location));
+        } else {
+            mLocationCheckButton.setText(getString(R.string.not_start_check_location));
         }
     }
 
