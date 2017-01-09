@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -27,6 +28,12 @@ public class LocationService extends Service {
 
     private static final String TAG = "LocationService";
     private Timer mTimer;
+    private LocationUtil mUtil;
+
+    /**
+     * ロケーションリスナ
+     */
+    private LocationListener mListener;
 
     @Override
     public void onCreate() {
@@ -55,15 +62,19 @@ public class LocationService extends Service {
         long initLatitude = 0;
         long initLongitude = 0;
         saveLocationAtPreference(initLatitude, initLongitude);
-
-        LocationUtil locationUtil = LocationUtil.getInstance(getApplicationContext());
+        if (mUtil == null) {
+            mUtil = LocationUtil.getInstance(getApplicationContext());
+        }
 
         // 常時チェックのため100メートル且つ30秒ごとでチェックを行う
         long minTime = 10000;
         float minDistance = 50;
+        if (mListener == null) {
+            mListener = mUtil.getLocationListener(mLocationCallback);
+        }
 
         // 位置情報取得スタート
-        locationUtil.acquireLocation(minTime, minDistance, mLocationCallback);
+        mUtil.acquireLocation(minTime, minDistance, mListener);
 
         // 10秒ごとにチェックをスタート
         start10SecondsLocationCheck();
@@ -78,10 +89,11 @@ public class LocationService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.v(TAG, "onDestroy");
-        LocationUtil util = LocationUtil.getInstance(getApplicationContext());
+        mUtil = LocationUtil.getInstance(getApplicationContext());
 
         // 位置情報の取得を停止
-        util.stopUpdate();
+        mUtil.stopUpdate(mListener);
+        mListener = null;
         // タイマーの停止
         if (mTimer != null) {
             mTimer.cancel();

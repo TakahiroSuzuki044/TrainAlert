@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
@@ -31,6 +32,8 @@ public class MainActivity extends BaseActivity {
 
     private Activity mActivity;
 
+    private LocationListener mLocationListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +45,16 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(toolbar);
 
         setFragment(new MainFragment());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mLocationListener != null) {
+            mLocationUtil.stopUpdate(mLocationListener);
+            mLocationListener = null;
+        }
+        sIsStartedLocationSearch = false;
     }
 
     /**
@@ -94,7 +107,8 @@ public class MainActivity extends BaseActivity {
                     // 即時現在地を取得する
                     long minTime = 0;
                     float minDistance = 0;
-                    boolean isObtain = mLocationUtil.acquireLocation(minTime, minDistance, mLocationCallback);
+                    mLocationListener = mLocationUtil.getLocationListener(mLocationCallback);
+                    boolean isObtain = mLocationUtil.acquireLocation(minTime, minDistance, mLocationListener);
 
                     if (isObtain) {
 
@@ -132,7 +146,8 @@ public class MainActivity extends BaseActivity {
             alarmUtil.setAlarmInLocation(getApplicationContext(), location);
 
             // 現在地取得を停止する
-            mLocationUtil.stopUpdate();
+            mLocationUtil.stopUpdate(mLocationListener);
+            mLocationListener = null;
             sIsStartedLocationSearch = false;
         }
 
@@ -148,7 +163,10 @@ public class MainActivity extends BaseActivity {
             }
 
             // 現在地取得を停止する
-            mLocationUtil.stopUpdate();
+            if (mLocationListener != null) {
+                mLocationUtil.stopUpdate(mLocationListener);
+                mLocationListener = null;
+            }
             sIsStartedLocationSearch = false;
         }
     };
@@ -162,7 +180,10 @@ public class MainActivity extends BaseActivity {
         public void onCancel(DialogInterface dialog) {
 
             // 現在地取得を停止する
-            mLocationUtil.stopUpdate();
+            if (mLocationListener != null) {
+                mLocationUtil.stopUpdate(mLocationListener);
+                mLocationListener = null;
+            }
             sIsStartedLocationSearch = false;
         }
     };
