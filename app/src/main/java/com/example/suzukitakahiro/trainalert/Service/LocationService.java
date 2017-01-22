@@ -89,8 +89,10 @@ public class LocationService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.v(TAG, "onDestroy");
-        mUtil = LocationUtil.getInstance(getApplicationContext());
+        if (mUtil == null) {
 
+            mUtil = LocationUtil.getInstance(getApplicationContext());
+        }
         // 位置情報の取得を停止
         mUtil.stopUpdate(mListener);
         mListener = null;
@@ -141,6 +143,14 @@ public class LocationService extends Service {
             @Override
             public void run() {
 
+                Log.d(TAG, "timer_task_run");
+
+                // 現在位置の取得が停止されているかチェックする
+                if (isCheckRequestedStopLocation()) {
+                    stopSelf();
+                    return;
+                }
+
                 // 最新の現在位置情報を保持データから取得
                 SharedPreferences  sp = getSharedPreferences(PREF_KEY_LOCATION, MODE_PRIVATE);
                 long lLatitude = sp.getLong(PREF_KEY_LATITUDE, 0);
@@ -182,5 +192,15 @@ public class LocationService extends Service {
         editor.putLong(PREF_KEY_LATITUDE, lLatitude);
         editor.putLong(PREF_KEY_LONGITUDE, lLongitude);
         editor.apply();
+    }
+
+    /**
+     * 現在位置の取得停止をリクエストがされているかチェックする
+     */
+    private boolean isCheckRequestedStopLocation() {
+
+        // 最新の現在位置情報を保持データから取得
+        SharedPreferences  sp = getSharedPreferences(PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK, MODE_PRIVATE);
+        return sp.getBoolean(PREF_KEY_IS_REQUESTED_STOP, false);
     }
 }

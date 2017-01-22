@@ -1,6 +1,8 @@
 package com.example.suzukitakahiro.trainalert.Fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -23,6 +25,9 @@ import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Service.LocationService;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.ServiceUtil;
+
+import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP;
+import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK;
 
 /**
  * @author suzukitakahiro on 2016/07/21.
@@ -173,17 +178,39 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
 
         boolean isStartedCheckLocation =
                 ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
-        Intent intent = new Intent(getContext(), LocationService.class);
+        Intent intent = new Intent(getActivity(), LocationService.class);
 
         // サービス未実行時は実行に、実行時は停止する
         if (isStartedCheckLocation) {
-            getActivity().stopService(intent);
+            isRequestStopLocationCheck();
             mLocationCheckButton.setText(getString(R.string.not_start_check_location));
             Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
         } else {
+            isRequestStartLocationCheck();
             getActivity().startService(intent);
             mLocationCheckButton.setText(getString(R.string.started_check_location));
             Toast.makeText(getActivity(), "チェックを開始しました", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 現在位置の取得停止をリクエストする
+     */
+    private void isRequestStopLocationCheck() {
+
+        // 保存
+        SharedPreferences sp = getContext().getSharedPreferences(PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean(PREF_KEY_IS_REQUESTED_STOP, true);
+        editor.apply();
+    }
+
+    private void isRequestStartLocationCheck() {
+
+        // 保存
+        SharedPreferences sp = getContext().getSharedPreferences(PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean(PREF_KEY_IS_REQUESTED_STOP, false);
+        editor.apply();
     }
 }

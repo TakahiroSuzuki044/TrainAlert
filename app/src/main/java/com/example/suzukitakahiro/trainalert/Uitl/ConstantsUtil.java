@@ -21,4 +21,14 @@ public class ConstantsUtil {
      * プリファレンスで利用するKey経度
      */
     public static final String PREF_KEY_LONGITUDE = "longitude";
+
+    /**
+     * 位置情報の取得停止を要求されているか判断するKey
+     */
+    public static final String PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK = "is_requested_stop_location_check";
+
+    /**
+     * 位置情報の取得停止を要求するKey
+     */
+    public static final String PREF_KEY_IS_REQUESTED_STOP = "pref_key_is_requested_stop";
 }
