@@ -142,14 +142,7 @@ public class LocationService extends Service {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-
                 Log.d(TAG, "timer_task_run");
-
-                // 現在位置の取得が停止されているかチェックする
-                if (isCheckRequestedStopLocation()) {
-                    stopSelf();
-                    return;
-                }
 
                 // 最新の現在位置情報を保持データから取得
                 SharedPreferences  sp = getSharedPreferences(PREF_KEY_LOCATION, MODE_PRIVATE);
@@ -192,15 +185,5 @@ public class LocationService extends Service {
         editor.putLong(PREF_KEY_LATITUDE, lLatitude);
         editor.putLong(PREF_KEY_LONGITUDE, lLongitude);
         editor.apply();
-    }
-
-    /**
-     * 現在位置の取得停止をリクエストがされているかチェックする
-     */
-    private boolean isCheckRequestedStopLocation() {
-
-        // 最新の現在位置情報を保持データから取得
-        SharedPreferences  sp = getSharedPreferences(PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK, MODE_PRIVATE);
-        return sp.getBoolean(PREF_KEY_IS_REQUESTED_STOP, false);
     }
 }

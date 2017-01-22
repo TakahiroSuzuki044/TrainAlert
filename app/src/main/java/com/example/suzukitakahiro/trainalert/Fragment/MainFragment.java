@@ -183,8 +183,10 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
         // サービス未実行時は実行に、実行時は停止する
         if (isStartedCheckLocation) {
             isRequestStopLocationCheck();
+            getActivity().stopService(intent);
             mLocationCheckButton.setText(getString(R.string.not_start_check_location));
             Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
+            getActivity().finish();
         } else {
             isRequestStartLocationCheck();
             getActivity().startService(intent);

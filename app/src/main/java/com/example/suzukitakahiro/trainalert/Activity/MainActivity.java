@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Process;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -18,6 +20,9 @@ import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.AlarmUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.DialogUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
+
+import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP;
+import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK;
 
 public class MainActivity extends BaseActivity {
 
@@ -55,6 +60,14 @@ public class MainActivity extends BaseActivity {
             mLocationListener = null;
         }
         sIsStartedLocationSearch = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isCheckRequestedStopLocation()) {
+            Process.killProcess(Process.myPid());
+        }
     }
 
     /**
@@ -187,4 +200,16 @@ public class MainActivity extends BaseActivity {
             sIsStartedLocationSearch = false;
         }
     };
+
+
+
+    /**
+     * 現在位置の取得停止をリクエストがされているかチェックする
+     */
+    private boolean isCheckRequestedStopLocation() {
+
+        // 最新の現在位置情報を保持データから取得
+        SharedPreferences sp = getSharedPreferences(PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK, MODE_PRIVATE);
+        return sp.getBoolean(PREF_KEY_IS_REQUESTED_STOP, false);
+    }
 }
