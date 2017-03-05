@@ -18,6 +18,7 @@ import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.Fragment.MainFragment;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.AlarmUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.DialogUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP;
@@ -102,41 +103,41 @@ public class MainActivity extends BaseActivity {
 
             // 現在地をアラーム情報として登録する
             // 初回アップデートはこの機能を閉じてリリースする
-//            case R.id.select_location:
-//
-//                // 二重の現在地取得を防ぐため
-//                if (sIsStartedLocationSearch) {
-//                    break;
-//                }
-//                sIsStartedLocationSearch = true;
-//                mLocationUtil = LocationUtil.getInstance(getApplicationContext());
-//
-//                // まず現在時間から逆算して5分以内に取得した位置情報があるか確認する
-//                Location lastLocation = mLocationUtil.acquireLastLocation();
-//
-//                // 5分以内に取得した位置情報がない場合は普通に取得する
-//                if (lastLocation == null) {
-//
-//                    // 即時現在地を取得する
-//                    long minTime = 0;
-//                    float minDistance = 0;
-//                    mLocationListener = mLocationUtil.getLocationListener(mLocationCallback);
-//                    boolean isObtain = mLocationUtil.acquireLocation(minTime, minDistance, mLocationListener);
-//
-//                    if (isObtain) {
-//
-//                        // 現在地取得中はダイアログを表示する
-//                        DialogUtil dialogUtil = new DialogUtil();
-//                        mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
-//                    }
-//                } else {
-//
-//                    // アラーム位置を登録する
-//                    AlarmUtil alarmUtil = new AlarmUtil();
-//                    alarmUtil.setAlarmInLocation(getApplicationContext(), lastLocation);
-//                    sIsStartedLocationSearch = false;
-//                }
-//                break;
+            case R.id.select_location:
+
+                // 二重の現在地取得を防ぐため
+                if (sIsStartedLocationSearch) {
+                    break;
+                }
+                sIsStartedLocationSearch = true;
+                mLocationUtil = LocationUtil.getInstance(getApplicationContext());
+
+                // まず現在時間から逆算して5分以内に取得した位置情報があるか確認する
+                Location lastLocation = mLocationUtil.acquireLastLocation();
+
+                // 5分以内に取得した位置情報がない場合は普通に取得する
+                if (lastLocation == null) {
+
+                    // 即時現在地を取得する
+                    long minTime = 0;
+                    float minDistance = 0;
+                    mLocationListener = mLocationUtil.getLocationListener(mLocationCallback);
+                    boolean isObtain = mLocationUtil.acquireLocation(minTime, minDistance, mLocationListener);
+
+                    if (isObtain) {
+
+                        // 現在地取得中はダイアログを表示する
+                        DialogUtil dialogUtil = new DialogUtil();
+                        mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
+                    }
+                } else {
+
+                    // アラーム位置を登録する
+                    AlarmUtil alarmUtil = new AlarmUtil();
+                    alarmUtil.setAlarmInLocation(getApplicationContext(), lastLocation);
+                    sIsStartedLocationSearch = false;
+                }
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

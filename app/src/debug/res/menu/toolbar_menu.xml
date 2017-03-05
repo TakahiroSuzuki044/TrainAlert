@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/select_station"
+        android:title="@string/set_station"
+        android:icon="@drawable/train"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/select_time"
+        android:title="@string/set_time"
+        android:icon="@drawable/time"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/select_location"
+        android:title="@string/set_location"
+        android:icon="@drawable/location"
+        app:showAsAction="always"/>
+
+</menu>
