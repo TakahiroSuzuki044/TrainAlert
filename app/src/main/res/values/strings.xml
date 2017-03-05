@@ -6,5 +6,10 @@
     <string name="started_check_location">アラームセット中。停止はタップ</string>
     <string name="not_start_check_location">チェックをスタートする</string>
 
+    <!--通知-->
+    <string name="notification_title">時間です</string>
+    <string name="notification_text_for_time">指定した時刻になりました</string>
+    <string name="notification_text_for_station">降りる時刻になりました</string>
+
     <string name="api_key_for_google_map">AIzaSyDbhaK7f2ZvOwSGqRI9h7R-HmYQaQoXDcw</string>
 </resources>

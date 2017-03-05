@@ -158,7 +158,7 @@ public class LocationService extends Service {
                 // 200ｍ以内のため通知する
                 if (isLess200meters) {
                     NotificationUtil notificationUtil = new NotificationUtil();
-                    notificationUtil.createHeadsUpNotification(context);
+                    notificationUtil.createHeadsUpNotifForStation(context);
 
                     // サービスの停止
                     stopSelf();

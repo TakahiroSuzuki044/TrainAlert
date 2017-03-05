@@ -22,6 +22,6 @@ public class TimeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         NotificationUtil notificationUtil = new NotificationUtil();
-        notificationUtil.createHeadsUpNotification(context);
+        notificationUtil.createHeadsUpNotifForTime(context);
     }
 }
