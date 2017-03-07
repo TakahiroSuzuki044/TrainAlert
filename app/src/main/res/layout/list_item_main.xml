@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
     <TextView
-        android:id="@+id/main_list_item_title"
+        android:id="@+id/main_list_item_station_name"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:textSize="25sp"
-        android:gravity="center"/>
+        android:layout_height="wrap_content"
+        android:padding="3dp"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        tools:text="駅名テキスト"/>
+
+    <TextView
+        android:id="@+id/main_list_item_line_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="1dp"
+        android:textSize="15dp"
+        android:textColor="@color/gray_black"
+        tools:text="沿線テキスト"/>
 
 </LinearLayout>
