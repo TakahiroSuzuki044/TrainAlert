@@ -24,6 +24,12 @@
             android:orientation="horizontal"
             tools:ignore="UseCompoundDrawables">
 
+            <TextView
+                style="@style/TutorialReadTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tutorial_first_step_read_num1"/>
+
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
@@ -70,6 +76,12 @@
             android:layout_height="wrap_content"
             android:text="@string/tutorial_second_step_text2"/>
 
+        <TextView
+            style="@style/TutorialDetailTextTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="@string/tutorial_detail_text"/>
     </LinearLayout>
 
 </ScrollView>

@@ -5,4 +5,5 @@
     <dimen name="tutorial_title_padding">15dp</dimen>
     <dimen name="tutorial_read_text_padding">10dp</dimen>
     <dimen name="tutorial_text_padding">2dp</dimen>
+    <dimen name="tutorial_detail_text_padding">5dp</dimen>
 </resources>

@@ -32,4 +32,11 @@
         <item name="android:paddingBottom">@dimen/tutorial_text_padding</item>
     </style>
 
+    <style name="TutorialDetailTextTheme">
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:paddingTop">@dimen/tutorial_detail_text_padding</item>
+        <item name="android:paddingBottom">@dimen/tutorial_detail_text_padding</item>
+    </style>
+
 </resources>
