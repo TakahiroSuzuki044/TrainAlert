@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -53,6 +54,10 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_main, container, false);
+        ViewStub tutorial = (ViewStub) mView.findViewById(R.id.fragment_main_tutorial);
+        View tutorialView = tutorial.inflate();
+        tutorialView.setVisibility(View.GONE);
+
         mLocationCheckButton = (Button) mView.findViewById(R.id.start_button);
         if (mLocationCheckButton != null) {
             mLocationCheckButton.setOnClickListener(this);
@@ -119,6 +124,23 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (data.getCount() == 0) {
+                mView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.findViewById(R.id.fragment_main_tutorial_stub).setVisibility(View.VISIBLE);
+                        mView.findViewById(R.id.location_list_view).setVisibility(View.GONE);
+                    }
+                });
+            } else {
+                mView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.findViewById(R.id.fragment_main_tutorial_stub).setVisibility(View.GONE);
+                        mView.findViewById(R.id.location_list_view).setVisibility(View.VISIBLE);
+                    }
+                });
+            }
             // Cursorのデータを新しく置き換え
             mSimpleCursorAdapter.swapCursor(data);
         }
