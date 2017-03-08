@@ -11,5 +11,15 @@
     <string name="notification_text_for_time">指定した時刻になりました</string>
     <string name="notification_text_for_station">降りる時刻になりました</string>
 
+    <!--チュートリアル-->
+    <string name="tutorial_title">簡単２ステップで始めましょう！</string>
+    <string name="tutorial_first_step_read_train">電車</string>
+    <string name="tutorial_first_step_read_text">マークから駅を登録</string>
+    <string name="tutorial_first_step_text1">画面上部の電車マークをタップ。</string>
+    <string name="tutorial_first_step_text2">都道府県を選択して、降りたい駅の沿線から駅を選びましょう。</string>
+    <string name="tutorial_second_step_read_text">位置情報のチェックをスタート</string>
+    <string name="tutorial_second_step_text1">電車に乗ったら「チェックをスタートする」ボタンをタップ。</string>
+    <string name="tutorial_second_step_text2">位置情報の取得が始まり、駅の到着をお知らせします。</string>
+
     <string name="api_key_for_google_map">AIzaSyDbhaK7f2ZvOwSGqRI9h7R-HmYQaQoXDcw</string>
 </resources>
