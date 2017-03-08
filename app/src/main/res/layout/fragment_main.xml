@@ -5,34 +5,29 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <RelativeLayout
+
+    <ListView
+        android:id="@+id/location_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-        <Button
-            android:id="@+id/start_button"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_alignParentBottom="true"
-            android:textSize="20sp"
-            android:background="@color/gray_black"/>
+    <ViewStub
+        android:id="@+id/fragment_main_tutorial"
+        android:inflatedId="@+id/fragment_main_tutorial_stub"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout="@layout/activity_main_tutorial_stub"
+        android:visibility="gone"/>
 
-        <ListView
-            android:id="@+id/location_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_above="@id/start_button"/>
-
-        <ViewStub
-            android:id="@+id/fragment_main_tutorial"
-            android:inflatedId="@+id/fragment_main_tutorial_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout="@layout/activity_main_tutorial_stub"
-            android:visibility="gone"
-            tools:visibility="visible"/>
-
-    </RelativeLayout>
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:background="@color/gray_black"
+        tools:text="テスト"/>
 
 </LinearLayout>
