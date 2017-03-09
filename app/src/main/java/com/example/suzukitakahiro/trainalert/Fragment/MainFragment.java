@@ -94,7 +94,7 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
      */
     private void setListView() {
         String[] from = {LocationColumns.TITLE};
-        int[] to = {R.id.main_list_item_title};
+        int[] to = {R.id.main_list_item_station_name};
 
         mSimpleCursorAdapter = new SimpleCursorAdapter
                 (getActivity(), R.layout.list_item_main, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
