@@ -21,7 +21,9 @@
     <string name="tutorial_second_step_read_text">②位置情報のチェックをスタート</string>
     <string name="tutorial_second_step_text1">電車に乗ったら「チェックをスタートする」ボタンをタップ。</string>
     <string name="tutorial_second_step_text2">位置情報の取得が始まり、登録駅に到着すると通知とバイブレーションでお知らせします。</string>
-    <string name="tutorial_detail_text">※詳細な利用方法はGooglePlayストアをご覧ください。</string>
+    <string name="tutorial_detail_text1">※詳細な利用方法は</string>
+    <string name="tutorial_detail_text2"><u>GooglePlayストア</u></string>
+    <string name="tutorial_detail_text3">をご覧ください。</string>
 
     <string name="api_key_for_google_map">AIzaSyDbhaK7f2ZvOwSGqRI9h7R-HmYQaQoXDcw</string>
 </resources>

@@ -76,12 +76,35 @@
             android:layout_height="wrap_content"
             android:text="@string/tutorial_second_step_text2"/>
 
-        <TextView
-            style="@style/TutorialDetailTextTheme"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="@string/tutorial_detail_text"/>
+            android:layout_height="wrap_content">
+
+            <TextView
+                style="@style/TutorialDetailTextTheme"
+                android:id="@+id/tutorial_detail_text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/tutorial_detail_text2"
+                android:text="@string/tutorial_detail_text1"/>
+            <TextView
+                style="@style/TutorialDetailTextTheme"
+                android:id="@+id/tutorial_detail_text2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/tutorial_detail_text3"
+                android:clickable="true"
+                android:textColor="@color/link_blue"
+                android:text="@string/tutorial_detail_text2"/>
+            <TextView
+                style="@style/TutorialDetailTextTheme"
+                android:id="@+id/tutorial_detail_text3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="@string/tutorial_detail_text3"/>
+        </RelativeLayout>
+
     </LinearLayout>
 
 </ScrollView>

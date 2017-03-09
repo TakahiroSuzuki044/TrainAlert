@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -24,6 +25,7 @@ import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Service.LocationService;
+import com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.ServiceUtil;
 
@@ -59,6 +61,7 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
         tutorialView.setVisibility(View.GONE);
 
         mLocationCheckButton = (Button) mView.findViewById(R.id.start_button);
+        mView.findViewById(R.id.tutorial_detail_text2).setOnClickListener(this);
         if (mLocationCheckButton != null) {
             mLocationCheckButton.setOnClickListener(this);
         }
@@ -182,38 +185,48 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
         }
     }
 
-    /**
-     * 位置チェックをスタートする
-     */
     @Override
     public void onClick(View v) {
-        LocationUtil util = LocationUtil.getInstance(getContext());
+        switch (v.getId()) {
+            case R.id.start_button:
+                // 位置チェックをスタートする
 
-        // 位置情報が取得可能か
-        boolean isEnableGps = util.checkEnableGps();
+                LocationUtil util = LocationUtil.getInstance(getContext());
 
-        // 位置情報取得不可の場合は改善ダイアログを表示する
-        if (!isEnableGps) {
-            util.showImproveLocationDialog(getActivity());
-            return;
-        }
+                // 位置情報が取得可能か
+                boolean isEnableGps = util.checkEnableGps();
 
-        boolean isStartedCheckLocation =
-                ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
-        Intent intent = new Intent(getActivity(), LocationService.class);
+                // 位置情報取得不可の場合は改善ダイアログを表示する
+                if (!isEnableGps) {
+                    util.showImproveLocationDialog(getActivity());
+                    return;
+                }
 
-        // サービス未実行時は実行に、実行時は停止する
-        if (isStartedCheckLocation) {
-            isRequestStopLocationCheck();
-            getActivity().stopService(intent);
-            mLocationCheckButton.setText(getString(R.string.not_start_check_location));
-            Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-        } else {
-            isRequestStartLocationCheck();
-            getActivity().startService(intent);
-            mLocationCheckButton.setText(getString(R.string.started_check_location));
-            Toast.makeText(getActivity(), "チェックを開始しました", Toast.LENGTH_SHORT).show();
+                boolean isStartedCheckLocation =
+                        ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
+                Intent intent = new Intent(getActivity(), LocationService.class);
+
+                // サービス未実行時は実行に、実行時は停止する
+                if (isStartedCheckLocation) {
+                    isRequestStopLocationCheck();
+                    getActivity().stopService(intent);
+                    mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+                    Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+                } else {
+                    isRequestStartLocationCheck();
+                    getActivity().startService(intent);
+                    mLocationCheckButton.setText(getString(R.string.started_check_location));
+                    Toast.makeText(getActivity(), "チェックを開始しました", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.tutorial_detail_text2:
+                // GooglePlayストア導線
+
+                Intent googlePlayIntent = new Intent(Intent.ACTION_VIEW);
+                googlePlayIntent.setData(Uri.parse(ConstantsUtil.URI_GOOGLE_PLAY_STORE));
+                startActivity(googlePlayIntent);
+                break;
         }
     }
 

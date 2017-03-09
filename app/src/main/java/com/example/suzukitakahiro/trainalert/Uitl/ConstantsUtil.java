@@ -31,4 +31,9 @@ public class ConstantsUtil {
      * 位置情報の取得停止を要求するKey
      */
     public static final String PREF_KEY_IS_REQUESTED_STOP = "pref_key_is_requested_stop";
+
+    /**
+     * GooglePlayストアのディープリンク
+     */
+    public static final String URI_GOOGLE_PLAY_STORE = "market://details?id=com.suzukitakahiro.trainalert";
 }
