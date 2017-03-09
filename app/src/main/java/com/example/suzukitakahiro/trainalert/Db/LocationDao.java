@@ -37,11 +37,11 @@ public class LocationDao {
     }
 
     /**
-     * LocationDBと照合し200m圏内の場合はアラートを促す
+     * LocationDBと照合し500m圏内の場合はアラートを促す
      *
      * @param currentLatitude       現在の緯度
      * @param currentLongitude      現在の経度
-     * @return 登録位置のいずれかと現在位置が200ｍ圏内の場合、True
+     * @return 登録位置のいずれかと現在位置が500ｍ圏内の場合、True
      */
     public boolean collateLocationDb(double currentLatitude, double currentLongitude) {
         Cursor cursor = findAllReturnCursor();
@@ -61,8 +61,8 @@ public class LocationDao {
 
             Location.distanceBetween(registerLatitude, registerLongitude, currentLatitude, currentLongitude, distance);
 
-            // 現在地と登録地の距離が200m圏内の場合はアラートを促す
-            if (distance[0] <= 200) {
+            // 現在地と登録地の距離が500m圏内の場合はアラートを促す
+            if (distance[0] <= 500) {
                 return true;
             }
         }

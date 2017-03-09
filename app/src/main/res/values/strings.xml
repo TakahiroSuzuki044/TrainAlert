@@ -9,7 +9,7 @@
     <!--通知-->
     <string name="notification_title">時間です</string>
     <string name="notification_text_for_time">指定した時刻になりました</string>
-    <string name="notification_text_for_station">降りる時刻になりました</string>
+    <string name="notification_text_for_station">間もなく駅に到着します</string>
 
     <!--チュートリアル-->
     <string name="tutorial_title">簡単２ステップで始めましょう！</string>
