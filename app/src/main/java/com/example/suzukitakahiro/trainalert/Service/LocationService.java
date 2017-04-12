@@ -13,6 +13,7 @@ import android.util.Log;
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.NotificationUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.PlayLocationUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,7 +29,8 @@ public class LocationService extends Service {
 
     private static final String TAG = "LocationService";
     private Timer mTimer;
-    private LocationUtil mUtil;
+    private LocationUtil mLocationUtil;
+    private PlayLocationUtil mPlayLocationUtil;
 
     /**
      * ロケーションリスナ
@@ -62,19 +64,11 @@ public class LocationService extends Service {
         long initLatitude = 0;
         long initLongitude = 0;
         saveLocationAtPreference(initLatitude, initLongitude);
-        if (mUtil == null) {
-            mUtil = LocationUtil.getInstance(getApplicationContext());
-        }
 
-        // 常時チェックのため100メートル且つ30秒ごとでチェックを行う
-        long minTime = 10000;
-        float minDistance = 50;
-        if (mListener == null) {
-            mListener = mUtil.getLocationListener(mLocationCallback);
+        if (mPlayLocationUtil == null) {
+            mPlayLocationUtil = PlayLocationUtil.getInstance();
         }
-
-        // 位置情報取得スタート
-        mUtil.acquireLocation(minTime, minDistance, mListener);
+        mPlayLocationUtil.kickOffLocationRequest(getApplicationContext(), mPlayLocationCallback);
 
         // 10秒ごとにチェックをスタート
         start10SecondsLocationCheck();
@@ -89,13 +83,19 @@ public class LocationService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.v(TAG, "onDestroy");
-        if (mUtil == null) {
+        if (mPlayLocationUtil != null) {
 
-            mUtil = LocationUtil.getInstance(getApplicationContext());
+            // GoogleApiを利用したロケーション取得を停止
+            mPlayLocationUtil.stopLocationUpdates();
         }
-        // 位置情報の取得を停止
-        mUtil.stopUpdate(mListener);
+
+        if (mLocationUtil != null) {
+
+            // 位置情報の取得を停止
+            mLocationUtil.stopUpdate(mListener);
+        }
         mListener = null;
+
         // タイマーの停止
         if (mTimer != null) {
             mTimer.cancel();
@@ -122,6 +122,45 @@ public class LocationService extends Service {
         public void Error(int errorCode) {
             Log.d(TAG, "Error");
             stopSelf();
+        }
+    };
+
+    /**
+     * GoogleApiを利用したロケーション取得処理のコールバック
+     */
+    private PlayLocationUtil.PlayLocationCallback mPlayLocationCallback = new PlayLocationUtil.PlayLocationCallback() {
+        @Override
+        public void onLocationChanged(Location location, String lastUpdateTime) {
+            Log.d(TAG, "onLocationChanged: ");
+
+            // 現在位置情報を更新
+            saveLocationAtPreference(location.getLatitude(), location.getLongitude());
+        }
+
+        /**
+         * GoogleApiを利用したロケーション取得が不可の場合は通常のLocation取得処理を行う
+         *
+         * @param ErrorCode エラーコード
+         */
+        @Override
+        public void onError(int ErrorCode) {
+
+            // GoogleApiを利用したロケーション取得の接続を切る
+            mPlayLocationUtil.stopLocationUpdates();
+
+            if (mLocationUtil == null) {
+                mLocationUtil = LocationUtil.getInstance(getApplicationContext());
+            }
+
+            // 常時チェックのため100メートル且つ30秒ごとでチェックを行う
+            long minTime = 10000;
+            float minDistance = 50;
+            if (mListener == null) {
+                mListener = mLocationUtil.getLocationListener(mLocationCallback);
+            }
+
+            // 位置情報取得スタート
+            mLocationUtil.acquireLocation(minTime, minDistance, mListener);
         }
     };
 
