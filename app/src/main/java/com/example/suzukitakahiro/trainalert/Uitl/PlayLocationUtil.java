@@ -29,7 +29,7 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
     /**
      * startResolutionForResultの識別子
      */
-    private static final int RESOLVE_CONNECTION_REQUEST_CODE = 1;
+    public static final int ERROR_CODE_NO_RESOLVE = -1;
 
     /**
      * 標準となる更新頻度を指定する。
@@ -43,14 +43,13 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     /**
-     * ロケーション取得時のコールバック
+     * GoogleAPIのインスタンス
      */
-    public interface PlayLocationCallback {
-        void onLocationChanged(Location location, String lastUpdateTime);
-        void onError();
-    }
-
     private GoogleApiClient mGoogleApiClient;
+
+    /**
+     * ロケーションリクエストのインスタンス
+     */
     private LocationRequest mLocationRequest;
 
     /**
@@ -58,6 +57,9 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
      */
     private Location mCurrentLocation;
 
+    /**
+     * ロケーション取得時のコールバック
+     */
     private PlayLocationCallback mCallback;
 
     /**
@@ -74,6 +76,9 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
 
     private PlayLocationUtil() {}
 
+    /**
+     * 本クラスのインスタンスを返却する（シングルトン）
+     */
     public static PlayLocationUtil getInstance() {
         if (sInstance == null) {
             sInstance = new PlayLocationUtil();
@@ -93,7 +98,7 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
         buildGoogleApiClient(context);
 
         // GoogleAPIに接続
-        if (!mGoogleApiClient.isConnected() || !mGoogleApiClient.isConnecting()) {
+        if (!(mGoogleApiClient.isConnected() || mGoogleApiClient.isConnecting())) {
             mGoogleApiClient.connect();
         }
         mRequestingLocationUpdates = true;
@@ -188,12 +193,11 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
         if (!connectionResult.hasResolution()) {
 
             // 解決策がないので、エラー処理
-            mCallback.onError();
-            return;
-        }
+            mCallback.onError(ERROR_CODE_NO_RESOLVE);
+        } else {
 
-        try {
-            connectionResult.startResolutionForResult(this, RESOLVE_CONNECTION_REQUEST_CODE);
+            // エラーコードを返却
+            mCallback.onError(connectionResult.getErrorCode());
         }
     }
 
@@ -202,5 +206,13 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         mCallback.onLocationChanged(mCurrentLocation, mLastUpdateTime);
+    }
+
+    /**
+     * ロケーション取得時のコールバック
+     */
+    public interface PlayLocationCallback {
+        void onLocationChanged(Location location, String lastUpdateTime);
+        void onError(int ErrorCode);
     }
 }
