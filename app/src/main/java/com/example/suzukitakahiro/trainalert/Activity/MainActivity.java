@@ -20,6 +20,7 @@ import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.AlarmUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.DialogUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.PlayLocationUtil;
 
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP;
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK;
@@ -34,6 +35,8 @@ public class MainActivity extends BaseActivity {
     private static boolean sIsStartedLocationSearch = false;
 
     private LocationUtil mLocationUtil;
+
+    private PlayLocationUtil mPlayLocationUtil;
 
     private Activity mActivity;
 
@@ -110,34 +113,25 @@ public class MainActivity extends BaseActivity {
                     break;
                 }
                 sIsStartedLocationSearch = true;
-                mLocationUtil = LocationUtil.getInstance(getApplicationContext());
 
-                // まず現在時間から逆算して5分以内に取得した位置情報があるか確認する
-                Location lastLocation = mLocationUtil.acquireLastLocation();
+                LocationUtil util = LocationUtil.getInstance(getApplicationContext());
 
-                // 5分以内に取得した位置情報がない場合は普通に取得する
-                if (lastLocation == null) {
+                // 位置情報が取得可能か
+                boolean isEnableGps = util.checkEnableGps();
 
-                    // 即時現在地を取得する
-                    long minTime = 0;
-                    float minDistance = 0;
-                    mLocationListener = mLocationUtil.getLocationListener(mLocationCallback);
-                    boolean isObtain = mLocationUtil.acquireLocation(minTime, minDistance, mLocationListener);
-
-                    if (isObtain) {
-
-                        // 現在地取得中はダイアログを表示する
-                        DialogUtil dialogUtil = new DialogUtil();
-                        mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
-                    }
-                } else {
-
-                    // アラーム位置を登録する
-                    AlarmUtil alarmUtil = new AlarmUtil();
-                    alarmUtil.setAlarmInLocation(getApplicationContext(), lastLocation);
+                // 位置情報取得不可の場合は改善ダイアログを表示する
+                if (!isEnableGps) {
+                    util.showImproveLocationDialog(mActivity);
                     sIsStartedLocationSearch = false;
+                    break;
                 }
-                break;
+
+                mPlayLocationUtil = PlayLocationUtil.getInstance();
+                mPlayLocationUtil.kickOffLocationRequest(getApplicationContext(), mPlayLocationCallback);
+
+                // 現在地取得中はダイアログを表示する
+                DialogUtil dialogUtil = new DialogUtil();
+                mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -185,6 +179,36 @@ public class MainActivity extends BaseActivity {
         }
     };
 
+    private PlayLocationUtil.PlayLocationCallback mPlayLocationCallback = new PlayLocationUtil.PlayLocationCallback() {
+        @Override
+        public void onLocationChanged(Location location, String lastUpdateTime) {
+
+            // ダイアログが表示されていた場合消す
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+
+            // アラーム位置を登録する
+            AlarmUtil alarmUtil = new AlarmUtil();
+            alarmUtil.setAlarmInLocation(getApplicationContext(), location);
+
+            mPlayLocationUtil.stopLocationUpdates();
+            sIsStartedLocationSearch = false;
+        }
+
+        @Override
+        public void onError(int ErrorCode) {
+
+            // ダイアログが表示されていた場合消す
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+
+            mPlayLocationUtil.stopLocationUpdates();
+            sIsStartedLocationSearch = false;
+        }
+    };
+
     /**
      * 位置情報取得時に表示するスピナーダイアログのキャンセルイベントリスナ
      */
@@ -201,8 +225,6 @@ public class MainActivity extends BaseActivity {
             sIsStartedLocationSearch = false;
         }
     };
-
-
 
     /**
      * 現在位置の取得停止をリクエストがされているかチェックする

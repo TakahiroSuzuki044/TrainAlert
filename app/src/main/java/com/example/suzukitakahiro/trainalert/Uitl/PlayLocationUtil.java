@@ -157,6 +157,7 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
             if (mGoogleApiClient.isConnected()) {
                 mGoogleApiClient.disconnect();
             }
+            sInstance = null;
         }
     }
 
