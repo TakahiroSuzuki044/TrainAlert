@@ -24,7 +24,7 @@ import java.util.Date;
 public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    protected static final String TAG = "location-updates-sample";
+    protected static final String TAG = "PlayLocationUtil";
 
     /**
      * startResolutionForResultの識別子
@@ -149,14 +149,18 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
      * ロケーションチェックを停止する
      */
     public void stopLocationUpdates() {
+        Log.d(TAG, "stopLocationUpdates: ");
+
         if (mRequestingLocationUpdates) {
             mRequestingLocationUpdates = false;
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
 
-            // GoogleAPIとの接続を解除する
+            // 既に接続されている場合はロケーションチェックを停止する
             if (mGoogleApiClient.isConnected()) {
+                Log.d(TAG, "stopLocationUpdates: removeLocationUpdates");
+                LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
                 mGoogleApiClient.disconnect();
             }
+
             sInstance = null;
         }
     }
@@ -168,9 +172,16 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "Connected to GoogleApiClient");
 
-        // ロケーション取得がリクエストされている場合、取得を行う
         if (mRequestingLocationUpdates) {
+
+            // ロケーション取得がリクエストされている場合、取得を行う
             startLocationUpdates();
+            Log.d(TAG, "onConnected: startLocationUpdates");
+        } else {
+
+            // リクエストが無い状態でコネクトした場合は、切断する
+            mGoogleApiClient.disconnect();
+            Log.d(TAG, "onConnected: disconnect");
         }
     }
 
@@ -204,6 +215,7 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.d(TAG, "onLocationChanged: ");
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         mCallback.onLocationChanged(mCurrentLocation, mLastUpdateTime);

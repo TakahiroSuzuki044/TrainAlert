@@ -189,6 +189,7 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.start_button:
+                Log.d(TAG, "MainFragment onClick: start_button");
                 // 位置チェックをスタートする
 
                 LocationUtil util = LocationUtil.getInstance(getContext());
