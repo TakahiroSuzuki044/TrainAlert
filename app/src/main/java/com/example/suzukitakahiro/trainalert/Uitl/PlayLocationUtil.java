@@ -111,6 +111,7 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
         mCallback = callback;
 
         buildGoogleApiClient(context);
+        buildLocationSettingsRequest();
 
         // GoogleAPIに接続
         if (!(mGoogleApiClient.isConnected() || mGoogleApiClient.isConnecting())) {
@@ -187,17 +188,8 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "Connected to GoogleApiClient");
 
-        if (mRequestingLocationUpdates) {
-
-            // ロケーション取得がリクエストされている場合、取得を行う
-            startLocationUpdates();
-            Log.d(TAG, "onConnected: startLocationUpdates");
-        } else {
-
-            // リクエストが無い状態でコネクトした場合は、切断する
-            mGoogleApiClient.disconnect();
-            Log.d(TAG, "onConnected: disconnect");
-        }
+        // 位置情報の取得許可状態をチェックする
+        checkLocationSettings();
     }
 
     /**
@@ -244,7 +236,9 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
     }
 
     public void checkLocationSettings() {
-        buildLocationSettingsRequest();
+
+        // リクエストがキャンセルされていない
+        if (mRequestingLocationUpdates) {
 
         // 1. ユーザが必要な位置情報設定を満たしているか確認する
         PendingResult<LocationSettingsResult> result =
@@ -259,9 +253,25 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
                         // 位置情報が利用できる
-                        // FusedLocationApi.requestLocationUpdatesなどを呼び出す
+
+                        Log.d(TAG, "onResult: LocationSettingsStatusCodes.SUCCESS");
+
+                        if (mRequestingLocationUpdates) {
+
+                            // ロケーション取得がリクエストされている場合、取得を行う
+                            startLocationUpdates();
+                            Log.d(TAG, "onConnected: startLocationUpdates");
+                        } else {
+
+                            // リクエストが無い状態でコネクトした場合は、切断する
+                            mGoogleApiClient.disconnect();
+                            Log.d(TAG, "onConnected: disconnect");
+                        }
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+
+                        Log.d(TAG, "onResult: LocationSettingsStatusCodes.RESOLUTION_REQUIRED");
+
                         mCallback.onError(LocationSettingsStatusCodes.RESOLUTION_REQUIRED);
 //                        try {
 //                            // 2. ユーザに位置情報設定を変更してもらうためのダイアログを表示する
@@ -272,9 +282,12 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                         // 位置情報が取得できず、なおかつその状態からの復帰も難しい時呼ばれるらしい
+                        Log.d(TAG, "onResult: LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE");
+
                         mCallback.onError(LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE);
                         break;
                 }}});
+        }
     }
 
     /**
