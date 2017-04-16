@@ -9,9 +9,15 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -25,6 +31,9 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     protected static final String TAG = "PlayLocationUtil";
+
+    /** リクエストコード */
+    private static final int REQUEST_LOCATION_SET = 123;
 
     /**
      * startResolutionForResultの識別子
@@ -51,6 +60,12 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
      * ロケーションリクエストのインスタンス
      */
     private LocationRequest mLocationRequest;
+
+    /**
+     * クライアントが使用したいロケーションサービスのタイプを格納します。チェックに使用
+     * 設定を使用して、デバイスに最適なロケーション設定があるかどうかを判断します。
+     */
+    protected LocationSettingsRequest mLocationSettingsRequest;
 
     /**
      * 最新のロケーション
@@ -219,6 +234,47 @@ public class PlayLocationUtil implements GoogleApiClient.ConnectionCallbacks,
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         mCallback.onLocationChanged(mCurrentLocation, mLastUpdateTime);
+    }
+
+
+    protected void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    public void checkLocationSettings() {
+        buildLocationSettingsRequest();
+
+        // 1. ユーザが必要な位置情報設定を満たしているか確認する
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        mLocationSettingsRequest
+                );
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                final Status status = locationSettingsResult.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // 位置情報が利用できる
+                        // FusedLocationApi.requestLocationUpdatesなどを呼び出す
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        mCallback.onError(LocationSettingsStatusCodes.RESOLUTION_REQUIRED);
+//                        try {
+//                            // 2. ユーザに位置情報設定を変更してもらうためのダイアログを表示する
+//                            status.startResolutionForResult(activity, requestCode);
+//                        } catch (IntentSender.SendIntentException e) {
+//                            // ignore
+//                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // 位置情報が取得できず、なおかつその状態からの復帰も難しい時呼ばれるらしい
+                        mCallback.onError(LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE);
+                        break;
+                }}});
     }
 
     /**
