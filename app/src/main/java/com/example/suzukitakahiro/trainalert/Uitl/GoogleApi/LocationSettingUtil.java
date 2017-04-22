@@ -49,6 +49,9 @@ public class LocationSettingUtil extends GoogleApiUtil implements GoogleApiClien
     private void buildLocationSettingsRequest() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(getLocationRequest());
+
+        // 取得出来ない場合は毎回アラートを出す
+        builder.setAlwaysShow(true);
         mLocationSettingsRequest = builder.build();
     }
 
