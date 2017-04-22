@@ -207,19 +207,8 @@ public class MainFragment extends BaseFragment
         switch (v.getId()) {
             case R.id.start_button:
                 Log.d(TAG, "MainFragment onClick: start_button");
-                // 位置チェックをスタートする
-//
-//                LocationUtil util = LocationUtil.getInstance(getContext());
-//
-//                // 位置情報が取得可能か
-//                boolean isEnableGps = util.checkEnableGps();
-//
-//                // 位置情報取得不可の場合は改善ダイアログを表示する
-//                if (!isEnableGps) {
-//                    util.showImproveLocationDialog(getActivity());
-//                    return;
-//                }
 
+                // 位置チェックをスタートする
                 mLocationSettingUtil = new LocationSettingUtil();
                 mLocationSettingUtil.checkLocationSetting(getContext(), mSettingUtilCallback);
 
@@ -235,7 +224,7 @@ public class MainFragment extends BaseFragment
     }
 
     /**
-     * 現在位置の取得停止をリクエストする
+     * 位置情報の取得をしていないことを保存する
      */
     private void isRequestStopLocationCheck() {
 
@@ -246,6 +235,9 @@ public class MainFragment extends BaseFragment
         editor.apply();
     }
 
+    /**
+     * 位置情報の取得を実施中であることを保存する
+     */
     private void isRequestStartLocationCheck() {
 
         // 保存
@@ -253,6 +245,29 @@ public class MainFragment extends BaseFragment
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(PREF_KEY_IS_REQUESTED_STOP, false);
         editor.apply();
+    }
+
+    /**
+     * 位置情報の取得サービスをスタートする
+     */
+    private void startCheckLocation() {
+        boolean isStartedCheckLocation =
+                ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
+        Intent intent = new Intent(getActivity(), LocationService.class);
+
+        // サービス未実行時は実行に、実行時は停止する
+        if (isStartedCheckLocation) {
+            isRequestStopLocationCheck();
+            getActivity().stopService(intent);
+            mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+            Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
+            getActivity().finish();
+        } else {
+            isRequestStartLocationCheck();
+            getActivity().startService(intent);
+            mLocationCheckButton.setText(getString(R.string.started_check_location));
+            Toast.makeText(getActivity(), "チェックを開始しました", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -266,42 +281,31 @@ public class MainFragment extends BaseFragment
 
             final Status status = settingsResult.getStatus();
             switch (status.getStatusCode()) {
+
+                // 位置情報が利用できる
                 case LocationSettingsStatusCodes.SUCCESS:
-                    // 位置情報が利用できる
                     Log.d(TAG, "onResult: SUCCESS");
+                    startCheckLocation();
 
-                    boolean isStartedCheckLocation =
-                            ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
-                    Intent intent = new Intent(getActivity(), LocationService.class);
-
-                    // サービス未実行時は実行に、実行時は停止する
-                    if (isStartedCheckLocation) {
-                        isRequestStopLocationCheck();
-                        getActivity().stopService(intent);
-                        mLocationCheckButton.setText(getString(R.string.not_start_check_location));
-                        Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
-                        getActivity().finish();
-                    } else {
-                        isRequestStartLocationCheck();
-                        getActivity().startService(intent);
-                        mLocationCheckButton.setText(getString(R.string.started_check_location));
-                        Toast.makeText(getActivity(), "チェックを開始しました", Toast.LENGTH_SHORT).show();
-                    }
                     break;
+
+                // 改善策があるため、ユーザーに位置情報の取得設定変更を促す
                 case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                    // 改善策があるため、ユーザーに位置情報の取得設定変更を促す
                     Log.d(TAG, "onResult: RESOLUTION_REQUIRED");
 
                     try {
-                        // 2. ユーザに位置情報設定を変更してもらうためのダイアログを表示する
+                        // ユーザに位置情報設定を変更してもらうためのダイアログを表示する
                         status.startResolutionForResult(getActivity(), REQUEST_CODE_SETTING_RESOLUTION);
                     } catch (IntentSender.SendIntentException e) {
-                        // ignore
+                        Toast.makeText(getContext(), "誠に申し訳ございません。位置情報のチェックスタートに失敗しました。", Toast.LENGTH_SHORT).show();
                     }
                     break;
+
+                // 位置情報が取得できず、なおかつその状態からの復帰も難しい時呼ばれるらしい
                 case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                    // 位置情報が取得できず、なおかつその状態からの復帰も難しい時呼ばれるらしい
                     Log.d(TAG, "onResult: SETTINGS_CHANGE_UNAVAILABLE");
+
+                    Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
                     break;
             }
             mLocationSettingUtil.stopLocationSettingChecking();

@@ -31,9 +31,7 @@ public class MainActivity extends BaseActivity {
     /**
      * 登録地と現在地の毎時照合がスタートしているか
      */
-    private static boolean sIsStartedLocationSearch = false;
-
-//    private LocationUtil mLocationUtil;
+    private boolean mIsStartedLocationSearch = false;
 
     private FusedLocationUtil mFusedLocationUtil;
 
@@ -58,10 +56,9 @@ public class MainActivity extends BaseActivity {
     protected void onPause() {
         super.onPause();
         if (mLocationListener != null) {
-//            mLocationUtil.stopUpdate(mLocationListener);
             mLocationListener = null;
         }
-        sIsStartedLocationSearch = false;
+        mIsStartedLocationSearch = false;
     }
 
     @Override
@@ -108,25 +105,6 @@ public class MainActivity extends BaseActivity {
             case R.id.select_location:
 
                 // 二重の現在地取得を防ぐため
-//                if (sIsStartedLocationSearch) {
-//                    break;
-//                }
-//                sIsStartedLocationSearch = true;
-//
-//                LocationUtil util = LocationUtil.getInstance(getApplicationContext());
-//
-//                // 位置情報が取得可能か
-//                boolean isEnableGps = util.checkEnableGps();
-//
-//                // 位置情報取得不可の場合は改善ダイアログを表示する
-//                if (!isEnableGps) {
-//                    util.showImproveLocationDialog(mActivity);
-//                    sIsStartedLocationSearch = false;
-//                    break;
-//                }
-
-
-
                 mFusedLocationUtil = FusedLocationUtil.getInstance();
                 mFusedLocationUtil.kickOffLocationRequest(getApplicationContext(), mPlayLocationCallback);
 
@@ -136,49 +114,6 @@ public class MainActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-//
-//
-//    /**
-//     * 位置情報取得時のコールバック
-//     * 取得成功：アラーム位置を登録する
-//     */
-//    private LocationUtil.LocationCallback mLocationCallback = new LocationUtil.LocationCallback() {
-//        @Override
-//        public void Success(Location location) {
-//            // ダイアログが表示されていた場合消す
-//            if (mProgressDialog != null && mProgressDialog.isShowing()) {
-//                mProgressDialog.dismiss();
-//            }
-//
-//            // アラーム位置を登録する
-//            AlarmUtil alarmUtil = new AlarmUtil();
-//            alarmUtil.setAlarmInLocation(getApplicationContext(), location);
-//
-//            // 現在地取得を停止する
-//            mLocationUtil.stopUpdate(mLocationListener);
-//            mLocationListener = null;
-//            sIsStartedLocationSearch = false;
-//        }
-//
-//        @Override
-//        public void Error(int errorCode) {
-//            switch (errorCode) {
-//                case LocationUtil.INVALID_GET_LOCATION:
-//                    mLocationUtil.showImproveLocationDialog(mActivity);
-//            }
-//            // ダイアログが表示されていた場合消す
-//            if (mProgressDialog != null && mProgressDialog.isShowing()) {
-//                mProgressDialog.dismiss();
-//            }
-//
-//            // 現在地取得を停止する
-//            if (mLocationListener != null) {
-//                mLocationUtil.stopUpdate(mLocationListener);
-//                mLocationListener = null;
-//            }
-//            sIsStartedLocationSearch = false;
-//        }
-//    };
 
     private FusedLocationUtil.PlayLocationCallback mPlayLocationCallback = new FusedLocationUtil.PlayLocationCallback() {
         @Override
@@ -194,7 +129,7 @@ public class MainActivity extends BaseActivity {
             alarmUtil.setAlarmInLocation(getApplicationContext(), location);
 
             mFusedLocationUtil.stopLocationUpdates();
-            sIsStartedLocationSearch = false;
+            mIsStartedLocationSearch = false;
         }
 
         @Override
@@ -206,7 +141,7 @@ public class MainActivity extends BaseActivity {
             }
 
             mFusedLocationUtil.stopLocationUpdates();
-            sIsStartedLocationSearch = false;
+            mIsStartedLocationSearch = false;
         }
     };
 
@@ -223,7 +158,7 @@ public class MainActivity extends BaseActivity {
 //                mLocationUtil.stopUpdate(mLocationListener);
                 mLocationListener = null;
             }
-            sIsStartedLocationSearch = false;
+            mIsStartedLocationSearch = false;
         }
     };
 
