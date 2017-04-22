@@ -11,14 +11,15 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
-import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.GoogleApi.FusedLocationUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.NotificationUtil;
-import com.example.suzukitakahiro.trainalert.Uitl.PlayLocationUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.*;
+import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_LATITUDE;
+import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_LOCATION;
+import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_LONGITUDE;
 
 /**
  * 位置情報取得サービス
@@ -29,8 +30,7 @@ public class LocationService extends Service {
 
     private static final String TAG = "LocationService";
     private Timer mTimer;
-    private LocationUtil mLocationUtil;
-    private PlayLocationUtil mPlayLocationUtil;
+    private FusedLocationUtil mFusedLocationUtil;
 
     /**
      * ロケーションリスナ
@@ -65,10 +65,10 @@ public class LocationService extends Service {
         long initLongitude = 0;
         saveLocationAtPreference(initLatitude, initLongitude);
 
-        if (mPlayLocationUtil == null) {
-            mPlayLocationUtil = PlayLocationUtil.getInstance();
+        if (mFusedLocationUtil == null) {
+            mFusedLocationUtil = FusedLocationUtil.getInstance();
         }
-        mPlayLocationUtil.kickOffLocationRequest(getApplicationContext(), mPlayLocationCallback);
+        mFusedLocationUtil.kickOffLocationRequest(getApplicationContext(), mPlayLocationCallback);
 
         // 10秒ごとにチェックをスタート
         start10SecondsLocationCheck();
@@ -83,16 +83,10 @@ public class LocationService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.v(TAG, "onDestroy");
-        if (mPlayLocationUtil != null) {
+        if (mFusedLocationUtil != null) {
 
             // GoogleApiを利用したロケーション取得を停止
-            mPlayLocationUtil.stopLocationUpdates();
-        }
-
-        if (mLocationUtil != null) {
-
-            // 位置情報の取得を停止
-            mLocationUtil.stopUpdate(mListener);
+            mFusedLocationUtil.stopLocationUpdates();
         }
         mListener = null;
 
@@ -103,32 +97,9 @@ public class LocationService extends Service {
     }
 
     /**
-     * 現在地取得用のコールバック
-     */
-    private LocationUtil.LocationCallback mLocationCallback = new LocationUtil.LocationCallback() {
-
-        /**
-         * 登録地と比較して200m圏内の場合はアラートを出す
-         */
-        @Override
-        public void Success(Location location) {
-            Log.d(TAG, "Success");
-
-            // 現在位置情報を更新
-            saveLocationAtPreference(location.getLatitude(), location.getLongitude());
-        }
-
-        @Override
-        public void Error(int errorCode) {
-            Log.d(TAG, "Error");
-            stopSelf();
-        }
-    };
-
-    /**
      * GoogleApiを利用したロケーション取得処理のコールバック
      */
-    private PlayLocationUtil.PlayLocationCallback mPlayLocationCallback = new PlayLocationUtil.PlayLocationCallback() {
+    private FusedLocationUtil.PlayLocationCallback mPlayLocationCallback = new FusedLocationUtil.PlayLocationCallback() {
         @Override
         public void onLocationChanged(Location location, String lastUpdateTime) {
             Log.d(TAG, "onLocationChanged: ");
@@ -143,24 +114,12 @@ public class LocationService extends Service {
          * @param ErrorCode エラーコード
          */
         @Override
-        public void onError(int ErrorCode) {
+        public void onConnectionError(int ErrorCode) {
 
             // GoogleApiを利用したロケーション取得の接続を切る
-            mPlayLocationUtil.stopLocationUpdates();
+            mFusedLocationUtil.stopLocationUpdates();
 
-            if (mLocationUtil == null) {
-                mLocationUtil = LocationUtil.getInstance(getApplicationContext());
-            }
-
-            // 常時チェックのため100メートル且つ30秒ごとでチェックを行う
-            long minTime = 10000;
-            float minDistance = 50;
-            if (mListener == null) {
-                mListener = mLocationUtil.getLocationListener(mLocationCallback);
-            }
-
-            // 位置情報取得スタート
-            mLocationUtil.acquireLocation(minTime, minDistance, mListener);
+            stopSelf();
         }
     };
 

@@ -19,8 +19,7 @@ import com.example.suzukitakahiro.trainalert.Fragment.MainFragment;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.AlarmUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.DialogUtil;
-import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
-import com.example.suzukitakahiro.trainalert.Uitl.PlayLocationUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.GoogleApi.FusedLocationUtil;
 
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP;
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK;
@@ -34,9 +33,9 @@ public class MainActivity extends BaseActivity {
      */
     private static boolean sIsStartedLocationSearch = false;
 
-    private LocationUtil mLocationUtil;
+//    private LocationUtil mLocationUtil;
 
-    private PlayLocationUtil mPlayLocationUtil;
+    private FusedLocationUtil mFusedLocationUtil;
 
     private Activity mActivity;
 
@@ -59,7 +58,7 @@ public class MainActivity extends BaseActivity {
     protected void onPause() {
         super.onPause();
         if (mLocationListener != null) {
-            mLocationUtil.stopUpdate(mLocationListener);
+//            mLocationUtil.stopUpdate(mLocationListener);
             mLocationListener = null;
         }
         sIsStartedLocationSearch = false;
@@ -109,25 +108,27 @@ public class MainActivity extends BaseActivity {
             case R.id.select_location:
 
                 // 二重の現在地取得を防ぐため
-                if (sIsStartedLocationSearch) {
-                    break;
-                }
-                sIsStartedLocationSearch = true;
+//                if (sIsStartedLocationSearch) {
+//                    break;
+//                }
+//                sIsStartedLocationSearch = true;
+//
+//                LocationUtil util = LocationUtil.getInstance(getApplicationContext());
+//
+//                // 位置情報が取得可能か
+//                boolean isEnableGps = util.checkEnableGps();
+//
+//                // 位置情報取得不可の場合は改善ダイアログを表示する
+//                if (!isEnableGps) {
+//                    util.showImproveLocationDialog(mActivity);
+//                    sIsStartedLocationSearch = false;
+//                    break;
+//                }
 
-                LocationUtil util = LocationUtil.getInstance(getApplicationContext());
 
-                // 位置情報が取得可能か
-                boolean isEnableGps = util.checkEnableGps();
 
-                // 位置情報取得不可の場合は改善ダイアログを表示する
-                if (!isEnableGps) {
-                    util.showImproveLocationDialog(mActivity);
-                    sIsStartedLocationSearch = false;
-                    break;
-                }
-
-                mPlayLocationUtil = PlayLocationUtil.getInstance();
-                mPlayLocationUtil.kickOffLocationRequest(getApplicationContext(), mPlayLocationCallback);
+                mFusedLocationUtil = FusedLocationUtil.getInstance();
+                mFusedLocationUtil.kickOffLocationRequest(getApplicationContext(), mPlayLocationCallback);
 
                 // 現在地取得中はダイアログを表示する
                 DialogUtil dialogUtil = new DialogUtil();
@@ -135,51 +136,51 @@ public class MainActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+//
+//
+//    /**
+//     * 位置情報取得時のコールバック
+//     * 取得成功：アラーム位置を登録する
+//     */
+//    private LocationUtil.LocationCallback mLocationCallback = new LocationUtil.LocationCallback() {
+//        @Override
+//        public void Success(Location location) {
+//            // ダイアログが表示されていた場合消す
+//            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+//                mProgressDialog.dismiss();
+//            }
+//
+//            // アラーム位置を登録する
+//            AlarmUtil alarmUtil = new AlarmUtil();
+//            alarmUtil.setAlarmInLocation(getApplicationContext(), location);
+//
+//            // 現在地取得を停止する
+//            mLocationUtil.stopUpdate(mLocationListener);
+//            mLocationListener = null;
+//            sIsStartedLocationSearch = false;
+//        }
+//
+//        @Override
+//        public void Error(int errorCode) {
+//            switch (errorCode) {
+//                case LocationUtil.INVALID_GET_LOCATION:
+//                    mLocationUtil.showImproveLocationDialog(mActivity);
+//            }
+//            // ダイアログが表示されていた場合消す
+//            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+//                mProgressDialog.dismiss();
+//            }
+//
+//            // 現在地取得を停止する
+//            if (mLocationListener != null) {
+//                mLocationUtil.stopUpdate(mLocationListener);
+//                mLocationListener = null;
+//            }
+//            sIsStartedLocationSearch = false;
+//        }
+//    };
 
-
-    /**
-     * 位置情報取得時のコールバック
-     * 取得成功：アラーム位置を登録する
-     */
-    private LocationUtil.LocationCallback mLocationCallback = new LocationUtil.LocationCallback() {
-        @Override
-        public void Success(Location location) {
-            // ダイアログが表示されていた場合消す
-            if (mProgressDialog != null && mProgressDialog.isShowing()) {
-                mProgressDialog.dismiss();
-            }
-
-            // アラーム位置を登録する
-            AlarmUtil alarmUtil = new AlarmUtil();
-            alarmUtil.setAlarmInLocation(getApplicationContext(), location);
-
-            // 現在地取得を停止する
-            mLocationUtil.stopUpdate(mLocationListener);
-            mLocationListener = null;
-            sIsStartedLocationSearch = false;
-        }
-
-        @Override
-        public void Error(int errorCode) {
-            switch (errorCode) {
-                case LocationUtil.INVALID_GET_LOCATION:
-                    mLocationUtil.showImproveLocationDialog(mActivity);
-            }
-            // ダイアログが表示されていた場合消す
-            if (mProgressDialog != null && mProgressDialog.isShowing()) {
-                mProgressDialog.dismiss();
-            }
-
-            // 現在地取得を停止する
-            if (mLocationListener != null) {
-                mLocationUtil.stopUpdate(mLocationListener);
-                mLocationListener = null;
-            }
-            sIsStartedLocationSearch = false;
-        }
-    };
-
-    private PlayLocationUtil.PlayLocationCallback mPlayLocationCallback = new PlayLocationUtil.PlayLocationCallback() {
+    private FusedLocationUtil.PlayLocationCallback mPlayLocationCallback = new FusedLocationUtil.PlayLocationCallback() {
         @Override
         public void onLocationChanged(Location location, String lastUpdateTime) {
 
@@ -192,19 +193,19 @@ public class MainActivity extends BaseActivity {
             AlarmUtil alarmUtil = new AlarmUtil();
             alarmUtil.setAlarmInLocation(getApplicationContext(), location);
 
-            mPlayLocationUtil.stopLocationUpdates();
+            mFusedLocationUtil.stopLocationUpdates();
             sIsStartedLocationSearch = false;
         }
 
         @Override
-        public void onError(int ErrorCode) {
+        public void onConnectionError(int ErrorCode) {
 
             // ダイアログが表示されていた場合消す
             if (mProgressDialog != null && mProgressDialog.isShowing()) {
                 mProgressDialog.dismiss();
             }
 
-            mPlayLocationUtil.stopLocationUpdates();
+            mFusedLocationUtil.stopLocationUpdates();
             sIsStartedLocationSearch = false;
         }
     };
@@ -219,7 +220,7 @@ public class MainActivity extends BaseActivity {
 
             // 現在地取得を停止する
             if (mLocationListener != null) {
-                mLocationUtil.stopUpdate(mLocationListener);
+//                mLocationUtil.stopUpdate(mLocationListener);
                 mLocationListener = null;
             }
             sIsStartedLocationSearch = false;

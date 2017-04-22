@@ -2,6 +2,7 @@ package com.example.suzukitakahiro.trainalert.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,8 +27,12 @@ import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Service.LocationService;
 import com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil;
-import com.example.suzukitakahiro.trainalert.Uitl.LocationUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.GoogleApi.LocationSettingUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.ServiceUtil;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP;
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK;
@@ -37,16 +42,28 @@ import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_
  *         <p/>
  *         Top画面のリスト部分
  */
-public class MainFragment extends BaseFragment implements ListView.OnItemLongClickListener,
-        View.OnClickListener, DeleteDialog.DialogCallback {
+public class MainFragment extends BaseFragment
+        implements ListView.OnItemLongClickListener,
+        View.OnClickListener,
+        DeleteDialog.DialogCallback {
 
     private static final String TAG = "MainFragment";
+
+    /**
+     * リクエストコード：位置情報の取得再設定を促す場合
+     */
+    private static final int REQUEST_CODE_SETTING_RESOLUTION = 1;
 
     private SimpleCursorAdapter mSimpleCursorAdapter;
 
     private View mView;
 
     private Button mLocationCheckButton;
+
+    /**
+     * 位置情報の取得設定を確認するクラスのインスタンス.
+     */
+    private LocationSettingUtil mLocationSettingUtil;
 
     /**
      * DB登録駅の全件検索
@@ -191,35 +208,21 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
             case R.id.start_button:
                 Log.d(TAG, "MainFragment onClick: start_button");
                 // 位置チェックをスタートする
+//
+//                LocationUtil util = LocationUtil.getInstance(getContext());
+//
+//                // 位置情報が取得可能か
+//                boolean isEnableGps = util.checkEnableGps();
+//
+//                // 位置情報取得不可の場合は改善ダイアログを表示する
+//                if (!isEnableGps) {
+//                    util.showImproveLocationDialog(getActivity());
+//                    return;
+//                }
 
-                LocationUtil util = LocationUtil.getInstance(getContext());
+                mLocationSettingUtil = new LocationSettingUtil();
+                mLocationSettingUtil.checkLocationSetting(getContext(), mSettingUtilCallback);
 
-                // 位置情報が取得可能か
-                boolean isEnableGps = util.checkEnableGps();
-
-                // 位置情報取得不可の場合は改善ダイアログを表示する
-                if (!isEnableGps) {
-                    util.showImproveLocationDialog(getActivity());
-                    return;
-                }
-
-                boolean isStartedCheckLocation =
-                        ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
-                Intent intent = new Intent(getActivity(), LocationService.class);
-
-                // サービス未実行時は実行に、実行時は停止する
-                if (isStartedCheckLocation) {
-                    isRequestStopLocationCheck();
-                    getActivity().stopService(intent);
-                    mLocationCheckButton.setText(getString(R.string.not_start_check_location));
-                    Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
-                    getActivity().finish();
-                } else {
-                    isRequestStartLocationCheck();
-                    getActivity().startService(intent);
-                    mLocationCheckButton.setText(getString(R.string.started_check_location));
-                    Toast.makeText(getActivity(), "チェックを開始しました", Toast.LENGTH_SHORT).show();
-                }
                 break;
             case R.id.tutorial_detail_text2:
                 // GooglePlayストア導線
@@ -250,5 +253,72 @@ public class MainFragment extends BaseFragment implements ListView.OnItemLongCli
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(PREF_KEY_IS_REQUESTED_STOP, false);
         editor.apply();
+    }
+
+    /**
+     * 端末での位置情報の設定をチェック後のコールバック
+     */
+    private LocationSettingUtil.LocationSettingUtilCallback mSettingUtilCallback =
+            new LocationSettingUtil.LocationSettingUtilCallback() {
+        @Override
+        public void onConnectedSuccess(LocationSettingsResult settingsResult) {
+            Log.d(TAG, "onConnectedSuccess: ");
+
+            final Status status = settingsResult.getStatus();
+            switch (status.getStatusCode()) {
+                case LocationSettingsStatusCodes.SUCCESS:
+                    // 位置情報が利用できる
+                    Log.d(TAG, "onResult: SUCCESS");
+
+                    boolean isStartedCheckLocation =
+                            ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
+                    Intent intent = new Intent(getActivity(), LocationService.class);
+
+                    // サービス未実行時は実行に、実行時は停止する
+                    if (isStartedCheckLocation) {
+                        isRequestStopLocationCheck();
+                        getActivity().stopService(intent);
+                        mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+                        Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
+                        getActivity().finish();
+                    } else {
+                        isRequestStartLocationCheck();
+                        getActivity().startService(intent);
+                        mLocationCheckButton.setText(getString(R.string.started_check_location));
+                        Toast.makeText(getActivity(), "チェックを開始しました", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                    // 改善策があるため、ユーザーに位置情報の取得設定変更を促す
+                    Log.d(TAG, "onResult: RESOLUTION_REQUIRED");
+
+                    try {
+                        // 2. ユーザに位置情報設定を変更してもらうためのダイアログを表示する
+                        status.startResolutionForResult(getActivity(), REQUEST_CODE_SETTING_RESOLUTION);
+                    } catch (IntentSender.SendIntentException e) {
+                        // ignore
+                    }
+                    break;
+                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                    // 位置情報が取得できず、なおかつその状態からの復帰も難しい時呼ばれるらしい
+                    Log.d(TAG, "onResult: SETTINGS_CHANGE_UNAVAILABLE");
+                    break;
+            }
+            mLocationSettingUtil.stopLocationSettingChecking();
+        }
+
+        @Override
+        public void onConnectionError(ConnectionResult connectionResult) {
+
+        }
+    };
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_SETTING_RESOLUTION:
+                // 位置情報の取得設定を再設定
+                break;
+        }
     }
 }
