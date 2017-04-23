@@ -73,9 +73,9 @@ public class GoogleApiUtil {
      * GoogleApiClientを切断する
      */
     protected void disconnectGoogleApiClient() {
-        Log.d(TAG, "disconnectGoogleApiClient: ");
-
         if (mGoogleApiClient.isConnected()) {
+            Log.d(TAG, "disconnectGoogleApiClient: disconnect");
+
             mGoogleApiClient.disconnect();
             mGoogleApiClient = null;
         }

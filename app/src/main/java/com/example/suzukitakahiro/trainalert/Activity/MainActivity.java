@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Process;
 import android.support.v4.app.FragmentManager;
@@ -37,8 +36,6 @@ public class MainActivity extends BaseActivity {
 
     private Activity mActivity;
 
-    private LocationListener mLocationListener;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +52,8 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (mLocationListener != null) {
-            mLocationListener = null;
+        if (mFusedLocationUtil != null) {
+            mFusedLocationUtil = null;
         }
         mIsStartedLocationSearch = false;
     }
@@ -105,12 +102,16 @@ public class MainActivity extends BaseActivity {
             case R.id.select_location:
 
                 // 二重の現在地取得を防ぐため
-                mFusedLocationUtil = FusedLocationUtil.getInstance();
-                mFusedLocationUtil.kickOffLocationRequest(getApplicationContext(), mPlayLocationCallback);
+                if (!mIsStartedLocationSearch) {
+                    mIsStartedLocationSearch = true;
 
-                // 現在地取得中はダイアログを表示する
-                DialogUtil dialogUtil = new DialogUtil();
-                mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
+                    mFusedLocationUtil = FusedLocationUtil.getInstance();
+                    mFusedLocationUtil.kickOffLocationRequest(getApplicationContext(), mPlayLocationCallback);
+
+                    // 現在地取得中はダイアログを表示する
+                    DialogUtil dialogUtil = new DialogUtil();
+                    mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -154,9 +155,9 @@ public class MainActivity extends BaseActivity {
         public void onCancel(DialogInterface dialog) {
 
             // 現在地取得を停止する
-            if (mLocationListener != null) {
-//                mLocationUtil.stopUpdate(mLocationListener);
-                mLocationListener = null;
+            if (mFusedLocationUtil != null) {
+                mFusedLocationUtil.stopLocationUpdates();
+                mFusedLocationUtil = null;
             }
             mIsStartedLocationSearch = false;
         }

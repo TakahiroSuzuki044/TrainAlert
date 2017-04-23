@@ -74,18 +74,12 @@ public class LocationSettingUtil extends GoogleApiUtil implements GoogleApiClien
      */
     public void stopLocationSettingChecking() {
 
+        // コネクションを切断する
+        disconnectGoogleApiClient();
+
         // 初期化
         mIsRequestCheckSetting = false;
         mLocationSettingUtilCallback = null;
-    }
-
-    /**
-     * GoogleApiClientを返却する
-     *
-     * @return GoogleApiClient
-     */
-    public GoogleApiClient getGoogleApiClient() {
-        return mGoogleApiClient;
     }
 
     @Override
@@ -109,9 +103,6 @@ public class LocationSettingUtil extends GoogleApiUtil implements GoogleApiClien
             });
         }
         mIsRequestCheckSetting = false;
-
-        // チェックが完了したのでコネクションは切断する
-//        disconnectGoogleApiClient();
     }
 
     @Override
