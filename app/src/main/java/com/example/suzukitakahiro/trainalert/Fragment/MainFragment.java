@@ -50,6 +50,11 @@ public class MainFragment extends BaseFragment
     private static final String TAG = "MainFragment";
 
     /**
+     * DB登録駅の全件検索
+     */
+    private static final int FIND_ALL = 0;
+
+    /**
      * リクエストコード：位置情報の取得再設定を促す場合
      */
     private static final int REQUEST_CODE_SETTING_RESOLUTION = 1;
@@ -66,9 +71,10 @@ public class MainFragment extends BaseFragment
     private LocationSettingUtil mLocationSettingUtil;
 
     /**
-     * DB登録駅の全件検索
+     * 位置情報の設定をチェック中か
      */
-    private static final int FIND_ALL = 0;
+    private boolean mIsCheckingLocationSetting;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -208,9 +214,20 @@ public class MainFragment extends BaseFragment
             case R.id.start_button:
                 Log.d(TAG, "MainFragment onClick: start_button");
 
-                // 位置チェックをスタートする
-                mLocationSettingUtil = new LocationSettingUtil();
-                mLocationSettingUtil.checkLocationSetting(getContext(), mSettingUtilCallback);
+                boolean isStartedCheckLocation =
+                        ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
+                if (isStartedCheckLocation) {
+                    // サービスが開始されている場合
+
+                    stopCheckLocation();
+                } else if (!mIsCheckingLocationSetting) {
+                    // 位置チェックをスタートする
+
+                    mIsCheckingLocationSetting = true;
+
+                    mLocationSettingUtil = new LocationSettingUtil();
+                    mLocationSettingUtil.checkLocationSetting(getContext(), mSettingUtilCallback);
+                }
 
                 break;
             case R.id.tutorial_detail_text2:
@@ -223,6 +240,7 @@ public class MainFragment extends BaseFragment
         }
     }
 
+    // TODO: 2017/04/23 現在の処理でも必要か確認する
     /**
      * 位置情報の取得をしていないことを保存する
      */
@@ -235,6 +253,7 @@ public class MainFragment extends BaseFragment
         editor.apply();
     }
 
+    // TODO: 2017/04/23 現在の処理でも必要か確認する
     /**
      * 位置情報の取得を実施中であることを保存する
      */
@@ -255,14 +274,8 @@ public class MainFragment extends BaseFragment
                 ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
         Intent intent = new Intent(getActivity(), LocationService.class);
 
-        // サービス未実行時は実行に、実行時は停止する
-        if (isStartedCheckLocation) {
-            isRequestStopLocationCheck();
-            getActivity().stopService(intent);
-            mLocationCheckButton.setText(getString(R.string.not_start_check_location));
-            Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-        } else {
+        // サービス未実行時は実行する
+        if (!isStartedCheckLocation) {
             isRequestStartLocationCheck();
             getActivity().startService(intent);
             mLocationCheckButton.setText(getString(R.string.started_check_location));
@@ -270,6 +283,20 @@ public class MainFragment extends BaseFragment
         }
     }
 
+    /**
+     * 位置情報の取得サービスを停止する
+     */
+    private void stopCheckLocation() {
+        Intent intent = new Intent(getActivity(), LocationService.class);
+
+        isRequestStopLocationCheck();
+        getActivity().stopService(intent);
+        mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+        Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
+        getActivity().finish();
+    }
+
+    // TODO: 2017/04/23 各処理にコネクションの切断処理を追加したのでテストを行う
     /**
      * 端末での位置情報の設定をチェック後のコールバック
      */
@@ -279,14 +306,20 @@ public class MainFragment extends BaseFragment
         public void onConnectedSuccess(LocationSettingsResult settingsResult) {
             Log.d(TAG, "onConnectedSuccess: ");
 
+            // チェックフラグをオフ
+            mIsCheckingLocationSetting = false;
+
             final Status status = settingsResult.getStatus();
             switch (status.getStatusCode()) {
 
                 // 位置情報が利用できる
                 case LocationSettingsStatusCodes.SUCCESS:
                     Log.d(TAG, "onResult: SUCCESS");
-                    startCheckLocation();
 
+                    // 設定チェックの終了
+                    mLocationSettingUtil.stopLocationSettingChecking();
+
+                    startCheckLocation();
                     break;
 
                 // 改善策があるため、ユーザーに位置情報の取得設定変更を促す
@@ -298,6 +331,9 @@ public class MainFragment extends BaseFragment
                         status.startResolutionForResult(getActivity(), REQUEST_CODE_SETTING_RESOLUTION);
                     } catch (IntentSender.SendIntentException e) {
                         Toast.makeText(getContext(), "誠に申し訳ございません。位置情報のチェックスタートに失敗しました。", Toast.LENGTH_SHORT).show();
+
+                        // 設定チェックの終了
+                        mLocationSettingUtil.stopLocationSettingChecking();
                     }
                     break;
 
@@ -306,22 +342,29 @@ public class MainFragment extends BaseFragment
                     Log.d(TAG, "onResult: SETTINGS_CHANGE_UNAVAILABLE");
 
                     Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
+
+                    // 設定チェックの終了
+                    mLocationSettingUtil.stopLocationSettingChecking();
                     break;
             }
-            mLocationSettingUtil.stopLocationSettingChecking();
         }
 
         @Override
         public void onConnectionError(ConnectionResult connectionResult) {
-
+            // TODO: 2017/04/23 コネクション失敗時の処理を追記する
+            mIsCheckingLocationSetting = false;
         }
     };
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         switch (requestCode) {
+
+            // 位置情報の取得設定を再設定
             case REQUEST_CODE_SETTING_RESOLUTION:
-                // 位置情報の取得設定を再設定
+
+                // 設定チェックの終了
+                mLocationSettingUtil.stopLocationSettingChecking();
                 break;
         }
     }
