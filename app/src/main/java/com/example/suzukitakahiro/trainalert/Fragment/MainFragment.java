@@ -366,6 +366,10 @@ public class MainFragment extends BaseFragment
 
         @Override
         public void onConnectionError(ConnectionResult connectionResult) {
+            Log.d(TAG, "onConnectionError: ");
+
+            // チェックフラグをオフ
+            mIsCheckingLocationSetting = false;
 
             //解決策があるかどうか
             if (!connectionResult.hasResolution()) {
@@ -375,6 +379,8 @@ public class MainFragment extends BaseFragment
 
                 // 設定チェックの終了
                 mLocationSettingUtil.stopLocationSettingChecking();
+                // 二重押し解禁
+                mLocationCheckButton.setEnabled(true);
                 return;
             }
 
@@ -388,8 +394,9 @@ public class MainFragment extends BaseFragment
 
                 // 設定チェックの終了
                 mLocationSettingUtil.stopLocationSettingChecking();
+                // 二重押し解禁
+                mLocationCheckButton.setEnabled(true);
             }
-            mIsCheckingLocationSetting = false;
         }
     };
 
