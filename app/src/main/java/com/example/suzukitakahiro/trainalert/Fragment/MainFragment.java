@@ -57,7 +57,7 @@ public class MainFragment extends BaseFragment
     /**
      * リクエストコード：位置情報の取得再設定を促す場合
      */
-    private static final int REQUEST_CODE_SETTING_RESOLUTION = 1;
+    public static final int REQUEST_CODE_SETTING_RESOLUTION = 1;
 
     private SimpleCursorAdapter mSimpleCursorAdapter;
 
@@ -214,6 +214,9 @@ public class MainFragment extends BaseFragment
             case R.id.start_button:
                 Log.d(TAG, "MainFragment onClick: start_button");
 
+                // 二重押し禁止
+                mLocationCheckButton.setEnabled(false);
+
                 boolean isStartedCheckLocation =
                         ServiceUtil.checkStartedService(getActivity(), LocationService.class.getName());
                 if (isStartedCheckLocation) {
@@ -287,8 +290,13 @@ public class MainFragment extends BaseFragment
      * 位置情報の取得サービスを停止する
      */
     private void stopCheckLocation() {
+
+        // 二重押し解禁
+        mLocationCheckButton.setEnabled(true);
+
         Intent intent = new Intent(getActivity(), LocationService.class);
 
+        // ロケーション取得とサービスを停止して、画面を閉じる
         isRequestStopLocationCheck();
         getActivity().stopService(intent);
         mLocationCheckButton.setText(getString(R.string.not_start_check_location));
@@ -296,7 +304,6 @@ public class MainFragment extends BaseFragment
         getActivity().finish();
     }
 
-    // TODO: 2017/04/23 各処理にコネクションの切断処理を追加したのでテストを行う
     /**
      * 端末での位置情報の設定をチェック後のコールバック
      */
@@ -316,6 +323,9 @@ public class MainFragment extends BaseFragment
                 case LocationSettingsStatusCodes.SUCCESS:
                     Log.d(TAG, "onResult: SUCCESS");
 
+                    // 二重押し解禁
+                    mLocationCheckButton.setEnabled(true);
+
                     // 設定チェックの終了
                     mLocationSettingUtil.stopLocationSettingChecking();
 
@@ -334,6 +344,9 @@ public class MainFragment extends BaseFragment
 
                         // 設定チェックの終了
                         mLocationSettingUtil.stopLocationSettingChecking();
+
+                        // 二重押し解禁
+                        mLocationCheckButton.setEnabled(true);
                     }
                     break;
 
@@ -345,6 +358,9 @@ public class MainFragment extends BaseFragment
 
                     // 設定チェックの終了
                     mLocationSettingUtil.stopLocationSettingChecking();
+
+                    // 二重押し解禁
+                    mLocationCheckButton.setEnabled(true);
                     break;
             }
         }
@@ -357,7 +373,7 @@ public class MainFragment extends BaseFragment
     };
 
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
 
             // 位置情報の取得設定を再設定
@@ -365,6 +381,9 @@ public class MainFragment extends BaseFragment
 
                 // 設定チェックの終了
                 mLocationSettingUtil.stopLocationSettingChecking();
+
+                // 二重押し解禁
+                mLocationCheckButton.setEnabled(true);
                 break;
         }
     }
