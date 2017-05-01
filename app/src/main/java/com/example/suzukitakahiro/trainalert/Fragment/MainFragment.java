@@ -58,6 +58,7 @@ public class MainFragment extends BaseFragment
      * リクエストコード：位置情報の取得再設定を促す場合
      */
     public static final int REQUEST_CODE_SETTING_RESOLUTION = 1;
+    public static final int RESOLVE_CODE_CONNECTION_RESOLUTION = 2;
 
     private SimpleCursorAdapter mSimpleCursorAdapter;
 
@@ -243,7 +244,6 @@ public class MainFragment extends BaseFragment
         }
     }
 
-    // TODO: 2017/04/23 現在の処理でも必要か確認する
     /**
      * 位置情報の取得をしていないことを保存する
      */
@@ -256,7 +256,6 @@ public class MainFragment extends BaseFragment
         editor.apply();
     }
 
-    // TODO: 2017/04/23 現在の処理でも必要か確認する
     /**
      * 位置情報の取得を実施中であることを保存する
      */
@@ -367,7 +366,29 @@ public class MainFragment extends BaseFragment
 
         @Override
         public void onConnectionError(ConnectionResult connectionResult) {
-            // TODO: 2017/04/23 コネクション失敗時の処理を追記する
+
+            //解決策があるかどうか
+            if (!connectionResult.hasResolution()) {
+
+                //ないので諦める
+                Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
+
+                // 設定チェックの終了
+                mLocationSettingUtil.stopLocationSettingChecking();
+                return;
+            }
+
+            try {
+                //GooglePlayServicesのActivityに解決を委譲する
+                connectionResult.startResolutionForResult(getActivity(), RESOLVE_CODE_CONNECTION_RESOLUTION);
+
+            } catch (IntentSender.SendIntentException e) {
+                // この例外がきたらどうしようもない。諦めのメッセージを出そう
+                Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
+
+                // 設定チェックの終了
+                mLocationSettingUtil.stopLocationSettingChecking();
+            }
             mIsCheckingLocationSetting = false;
         }
     };
@@ -378,6 +399,7 @@ public class MainFragment extends BaseFragment
 
             // 位置情報の取得設定を再設定
             case REQUEST_CODE_SETTING_RESOLUTION:
+            case RESOLVE_CODE_CONNECTION_RESOLUTION:
 
                 // 設定チェックの終了
                 mLocationSettingUtil.stopLocationSettingChecking();

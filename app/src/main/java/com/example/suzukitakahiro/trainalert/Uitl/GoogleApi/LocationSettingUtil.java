@@ -118,7 +118,6 @@ public class LocationSettingUtil extends GoogleApiUtil implements GoogleApiClien
 
         mLocationSettingUtilCallback.onConnectionError(connectionResult);
         mIsRequestCheckSetting = false;
-        disconnectGoogleApiClient();
     }
 
     /**
