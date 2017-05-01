@@ -1,6 +1,5 @@
 package com.example.suzukitakahiro.trainalert.Activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +7,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Process;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -34,19 +34,19 @@ public class MainActivity extends BaseActivity {
 
     private FusedLocationUtil mFusedLocationUtil;
 
-    private Activity mActivity;
+    private Fragment mFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mActivity = this;
 
         // ツールバーの設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        setFragment(new MainFragment());
+        mFragment = new MainFragment();
+        setFragment(mFragment);
     }
 
     @Override
@@ -63,6 +63,18 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
         if (isCheckRequestedStopLocation()) {
             Process.killProcess(Process.myPid());
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == MainFragment.REQUEST_CODE_SETTING_RESOLUTION){
+
+            // GoogleApiClientを切断する
+            mFragment.onActivityResult(requestCode, resultCode, data);
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
