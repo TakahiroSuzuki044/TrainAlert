@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -107,9 +108,9 @@ public class MainFragment extends BaseFragment
 
         // サービス状況によって表示を変更する
         if (isStartedCheckLocation) {
-            mLocationCheckButton.setText(getString(R.string.started_check_location));
+            changeStartButtonOn();
         } else {
-            mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+            changeStartButtonOff();
         }
     }
 
@@ -280,7 +281,7 @@ public class MainFragment extends BaseFragment
         if (!isStartedCheckLocation) {
             isRequestStartLocationCheck();
             getActivity().startService(intent);
-            mLocationCheckButton.setText(getString(R.string.started_check_location));
+            changeStartButtonOn();
             Toast.makeText(getActivity(), "チェックを開始しました", Toast.LENGTH_SHORT).show();
         }
     }
@@ -298,7 +299,7 @@ public class MainFragment extends BaseFragment
         // ロケーション取得とサービスを停止して、画面を閉じる
         isRequestStopLocationCheck();
         getActivity().stopService(intent);
-        mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+        changeStartButtonOff();
         Toast.makeText(getActivity(), "チェックを終了しました", Toast.LENGTH_SHORT).show();
         getActivity().finish();
     }
@@ -415,5 +416,23 @@ public class MainFragment extends BaseFragment
                 mLocationCheckButton.setEnabled(true);
                 break;
         }
+    }
+
+    /**
+     * スタートボタンのレイアウトをON状態にする
+     */
+    private void changeStartButtonOn() {
+        mLocationCheckButton.setText(getString(R.string.started_check_location));
+        mLocationCheckButton.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        mLocationCheckButton.setBackgroundResource(R.drawable.selector_main_fragment_start_button_on);
+    }
+
+    /**
+     * スタートボタンのレイアウトをOFF状態にする
+     */
+    private void changeStartButtonOff() {
+        mLocationCheckButton.setText(getString(R.string.not_start_check_location));
+        mLocationCheckButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+        mLocationCheckButton.setBackgroundResource(R.drawable.selector_main_fragment_start_button_off);
     }
 }
