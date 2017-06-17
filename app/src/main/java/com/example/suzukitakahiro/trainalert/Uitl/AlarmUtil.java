@@ -6,14 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 
+import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Receiver.TimeReceiver;
 
 import java.util.Calendar;
-import java.util.HashMap;
-
-import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LATITUDE;
-import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LONGITUDE;
 
 /**
  * @author suzukitakahiro on 2016/08/19.
@@ -62,14 +59,12 @@ public class AlarmUtil {
 
         LocationDao dao = new LocationDao(context);
 
-        // TODO: 2016/09/05 運用時には入力されたタイトルを設定する
-        String title = "test";
+        RegisterStationDto dto = new RegisterStationDto();
+        dto.station_name = "test";
+        dto.line_name = "路線名はない";
+        dto.st_latitude = location.getLatitude();
+        dto.st_longitude = location.getLongitude();
 
-        // 緯度、経度を格納
-        HashMap<String, Double> hashMap = new HashMap<>();
-        hashMap.put(LATITUDE, location.getLatitude());
-        hashMap.put(LONGITUDE, location.getLongitude());
-
-        return dao.insert(title, hashMap);
+        return dao.insert(dto);
     }
 }

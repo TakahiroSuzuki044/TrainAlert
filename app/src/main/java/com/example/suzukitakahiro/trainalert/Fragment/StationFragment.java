@@ -19,10 +19,6 @@ import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.StationDao;
 import com.example.suzukitakahiro.trainalert.R;
 
-import java.util.HashMap;
-
-import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LATITUDE;
-import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LONGITUDE;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_CD;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_CD_COLUMN;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_NAME;
@@ -168,11 +164,6 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
         mRegStationDto.station_name = cursor.getString(STATION_NAME_COLUMN);
         mRegStationDto.st_latitude = cursor.getDouble(ST_LATITUDE_COLUMN);
         mRegStationDto.st_longitude = cursor.getDouble(ST_LONGITUDE_COLUMN);
-
-        // 緯度、経度を格納
-        HashMap<String, Double> hashMap = new HashMap<>();
-        hashMap.put(LATITUDE, cursor.getDouble(ST_LATITUDE_COLUMN));
-        hashMap.put(LONGITUDE, cursor.getDouble(ST_LONGITUDE_COLUMN));
 
         LocationDao dao = new LocationDao(getActivity());
         return dao.insert(mRegStationDto);

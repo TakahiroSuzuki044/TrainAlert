@@ -108,10 +108,11 @@ public class LocationDao {
     public boolean insert(RegisterStationDto regStationDto) {
         ContentValues values = new ContentValues();
 
-        // レコードのタイトル、緯度、経度を挿入値に設定
+        // レコードのタイトル、緯度、経度、路線名を挿入値に設定
         values.put(LocationColumns.TITLE, regStationDto.station_name);
         values.put(LocationColumns.LATITUDE, regStationDto.st_latitude);
         values.put(LocationColumns.LONGITUDE, regStationDto.st_longitude);
+        values.put(LocationColumns.LINE_NAME, regStationDto.line_name);
 
         Uri uri = mContext.getContentResolver().insert(CONTENT_URI, values);
 
