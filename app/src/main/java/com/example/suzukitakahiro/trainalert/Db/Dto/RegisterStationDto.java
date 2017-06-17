@@ -9,22 +9,51 @@ import android.os.Parcelable;
  * 登録駅情報Dto
  */
 
-public class RegisterStationDto implements Parcelable {
+public class RegisterStationDto implements Parcelable{
 
-    public static String line_cd = "line_cd";
+    /** 路線コード */
+    public String line_cd = null;
 
-    public static String line_name = "line_name";
+    /** 路線名 */
+    public String line_name = null;
 
-    public static String station_cd = "station_cd";
+    /** 駅コード */
+    public String station_cd = null;
 
-    public static String st_latitude = "st_latitude";
+    /** 駅名 */
+    public String station_name = null;
 
-    public static String st_longitude = "st_longitude";
+    /** 経度 */
+    public double st_latitude = 0;
+
+    /** 緯度 */
+    public double st_longitude = 0;
+
+    public RegisterStationDto() {}
 
     protected RegisterStationDto(Parcel in) {
+        line_cd = in.readString();
+        line_name = in.readString();
+        station_cd = in.readString();
+        station_name = in.readString();
+        st_latitude = in.readDouble();
+        st_longitude = in.readDouble();
     }
 
-    public RegisterStationDto(){}
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(line_cd);
+        dest.writeString(line_name);
+        dest.writeString(station_cd);
+        dest.writeString(station_name);
+        dest.writeDouble(st_latitude);
+        dest.writeDouble(st_longitude);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     public static final Creator<RegisterStationDto> CREATOR = new Creator<RegisterStationDto>() {
         @Override
@@ -37,13 +66,4 @@ public class RegisterStationDto implements Parcelable {
             return new RegisterStationDto[size];
         }
     };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-    }
 }

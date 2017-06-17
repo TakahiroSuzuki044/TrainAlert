@@ -12,9 +12,10 @@ public class LocationColumns implements BaseColumns {
     /**
      * アラーム登録した位置情報テーブル
      *
-     * タイトル
+     * タイトル（駅名）
      * 経度
      * 緯度
+     * 路線名
      */
     public static final String LOCATION_TABLE_NAME = "location";
     public static final String TITLE = "title";
@@ -23,4 +24,6 @@ public class LocationColumns implements BaseColumns {
     public static final int LATITUDE_COLUMN = 2;
     public static final String LONGITUDE = "longitude";
     public static final int LONGITUDE_COLUMN = 3;
+    public static final String LINE_NAME = "line_name";
+    public static final int LINE_NAME_COLUMN = 4;
 }

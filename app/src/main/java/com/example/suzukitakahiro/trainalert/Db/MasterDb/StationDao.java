@@ -56,7 +56,7 @@ public class StationDao {
      * 路線CDで駅テーブルから駅コード/駅名を取得する
      * 一覧で表示するために利用するため、CDとNAMEしか取得しない
      */
-    public Loader<Cursor> findByLineCd(int lineCd) {
+    public Loader<Cursor> findByLineCd(String lineCd) {
 
         // 取得する情報
         String[] projection = {
@@ -65,7 +65,7 @@ public class StationDao {
                 STATION_NAME
         };
 
-        String[] selectionArgs = {String.valueOf(lineCd)};
+        String[] selectionArgs = {lineCd};
         String selection = LINE_CD;
         String sortOrder = null;
 

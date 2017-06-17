@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.StationDao;
 import com.example.suzukitakahiro.trainalert.R;
@@ -22,7 +23,6 @@ import java.util.HashMap;
 
 import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LATITUDE;
 import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LONGITUDE;
-import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LINE_CD;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_CD;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_CD_COLUMN;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.STATION_NAME;
@@ -38,14 +38,20 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.ST
 public class StationFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,
         AdapterView.OnItemClickListener {
 
-    private Context mContext;
-    private View mView;
-    private SimpleCursorAdapter mSimpleCursorAdapter;
+    /** 登録駅情報DtoのArgsKey */
+    public static final String ARGS_KEY_REGISTER_STATION_DTO = "args_key_register_station_dto";
 
     /** 駅テーブルで路線コードから駅名を取得 */
     private static final int FIND_STATION_BY_LINE_ID = 3;
     /** 駅テーブルで駅コードから駅情報を取得 */
     private static final int FIND_STATION_BY_STATION_ID = 4;
+
+    private Context mContext;
+    private View mView;
+    private SimpleCursorAdapter mSimpleCursorAdapter;
+
+    /** 選択された駅の情報を保持する */
+    private RegisterStationDto mRegStationDto;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,6 +60,7 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
 
         // 選択された都道府県CDを取得
         Bundle args = getArguments();
+        mRegStationDto = getArguments().getParcelable(ARGS_KEY_REGISTER_STATION_DTO);
 
         setListView();
 
@@ -70,8 +77,15 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
 
             // 路線コードから該当する駅名を取得
             case FIND_STATION_BY_LINE_ID:
-                int lineCd = args.getInt(LINE_CD);
-                cursorLoader = stationDao.findByLineCd(lineCd);
+                String lineCd;
+
+                // lineCdが取得出来る場合のみ検索する
+                if (mRegStationDto != null) {
+                    lineCd = mRegStationDto.line_cd;
+                    if (lineCd != null) {
+                        cursorLoader = stationDao.findByLineCd(lineCd);
+                    }
+                }
                 break;
 
             // 駅コードから駅情報（緯度/経度）を取得
@@ -150,7 +164,10 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
      */
     private boolean insertStationLocation(Cursor cursor) {
         cursor.moveToNext();
-        String stationName = cursor.getString(STATION_NAME_COLUMN);
+        mRegStationDto.station_cd = String.valueOf(cursor.getInt(STATION_CD_COLUMN));
+        mRegStationDto.station_name = cursor.getString(STATION_NAME_COLUMN);
+        mRegStationDto.st_latitude = cursor.getDouble(ST_LATITUDE_COLUMN);
+        mRegStationDto.st_longitude = cursor.getDouble(ST_LONGITUDE_COLUMN);
 
         // 緯度、経度を格納
         HashMap<String, Double> hashMap = new HashMap<>();
@@ -158,6 +175,6 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
         hashMap.put(LONGITUDE, cursor.getDouble(ST_LONGITUDE_COLUMN));
 
         LocationDao dao = new LocationDao(getActivity());
-        return dao.insert(stationName, hashMap);
+        return dao.insert(mRegStationDto);
     }
 }

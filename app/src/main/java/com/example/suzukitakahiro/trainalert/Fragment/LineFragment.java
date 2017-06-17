@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.LineDao;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.StationDao;
 import com.example.suzukitakahiro.trainalert.R;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LINE_CD;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LINE_CD_COLUMN;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LINE_NAME;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.LINE_NAME_COLUMN;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_CD;
 
 /**
@@ -142,13 +144,18 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        // 選択された路線コードを取得
+        // 選択された路線コード、路線名を取得
         Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-        int lineCd = cursor.getInt(LINE_CD_COLUMN);
+        String lineCd = String.valueOf(cursor.getInt(LINE_CD_COLUMN));
+        String lineName = cursor.getString(LINE_NAME_COLUMN);
+
+        RegisterStationDto regStationDto = new RegisterStationDto();
+        regStationDto.line_cd = lineCd;
+        regStationDto.line_name = lineName;
 
         // 駅画面へ遷移
         Bundle bundle = new Bundle();
-        bundle.putInt(LINE_CD, lineCd);
+        bundle.putParcelable(StationFragment.ARGS_KEY_REGISTER_STATION_DTO, regStationDto);
         Fragment stationFragment = new StationFragment();
         stationFragment.setArguments(bundle);
         setFragment(stationFragment);

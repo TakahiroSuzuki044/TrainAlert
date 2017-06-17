@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
+import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
+
 import java.util.HashMap;
 
 import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LATITUDE_COLUMN;
@@ -105,13 +107,13 @@ public class LocationDao {
      * @param hashMap LocationColumnsのTITLE/LATITUDE/LONGITUDEをキーとして、タイトル/緯度/経度を指定する
      * @return Cursor
      */
-    public boolean insert(String title, HashMap hashMap) {
+    public boolean insert(RegisterStationDto regStationDto) {
         ContentValues values = new ContentValues();
 
         // レコードのタイトル、緯度、経度を挿入値に設定
-        values.put(LocationColumns.TITLE, title);
-        values.put(LocationColumns.LATITUDE, (Double) hashMap.get(LocationColumns.LATITUDE));
-        values.put(LocationColumns.LONGITUDE, (Double) hashMap.get(LocationColumns.LONGITUDE));
+        values.put(LocationColumns.TITLE, regStationDto.station_name);
+        values.put(LocationColumns.LATITUDE, regStationDto.st_latitude);
+        values.put(LocationColumns.LONGITUDE, regStationDto.st_longitude);
 
         Uri uri = mContext.getContentResolver().insert(CONTENT_URI, values);
 
