@@ -4,9 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by suzukitakahiro on 2017/06/17.
- *
  * 登録駅情報Dto
+ *
+ * @author suzukitakahiro on 2017/06/17.
  */
 
 public class RegisterStationDto implements Parcelable{

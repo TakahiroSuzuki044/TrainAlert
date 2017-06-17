@@ -11,8 +11,6 @@ import android.support.v4.content.Loader;
 
 import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
 
-import java.util.HashMap;
-
 import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LATITUDE_COLUMN;
 import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LOCATION_TABLE_NAME;
 import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LONGITUDE_COLUMN;
@@ -104,8 +102,7 @@ public class LocationDao {
 
     /**
      * アラーム位置DBに位置情報を挿入する
-     * @param title 挿入するタイトル
-     * @param hashMap LocationColumnsのTITLE/LATITUDE/LONGITUDEをキーとして、タイトル/緯度/経度を指定する
+     * @param regStationDto 登録駅情報
      * @return Cursor
      */
     public boolean insert(RegisterStationDto regStationDto) {
