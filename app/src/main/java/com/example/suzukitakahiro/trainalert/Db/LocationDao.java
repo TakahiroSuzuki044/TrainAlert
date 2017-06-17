@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
@@ -158,5 +159,17 @@ public class LocationDao {
 
         // deleteCountが1レコード以上削除できていればTrue、その他はFalse
         return deleteCount != -1;
+    }
+
+
+    @NonNull
+    static String alterTableLineName() {
+        return new StringBuilder()
+                .append(LocationColumns.ALTER_TABLE)
+                .append(LocationColumns.LOCATION_TABLE_NAME)
+                .append(LocationColumns.ADD_COLUMN)
+                .append(LocationColumns.LINE_NAME)
+                .append(LocationColumns.TEXT)
+                .toString();
     }
 }

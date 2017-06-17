@@ -26,4 +26,11 @@ public class LocationColumns implements BaseColumns {
     public static final int LONGITUDE_COLUMN = 3;
     public static final String LINE_NAME = "line_name";
     public static final int LINE_NAME_COLUMN = 4;
+
+    /**
+     * ALTER文
+     */
+    public static final String ALTER_TABLE = "ALTER TABLE ";
+    public static final String ADD_COLUMN = " ADD COLUMN ";
+    public static final String TEXT = " TEXT";
 }

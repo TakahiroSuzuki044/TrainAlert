@@ -12,11 +12,13 @@ import android.util.Log;
  */
 public class LocationOpenHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = "LocationOpenHelper";
+
     /** データベース名 */
     private static final String DATABASE_NAME = "Location.db";
 
     /** データベースバージョン */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     /** 現在地テーブルのクリエイト文 */
     private static final String LOCATION_TABLE_CREATE =
@@ -24,7 +26,8 @@ public class LocationOpenHelper extends SQLiteOpenHelper {
                     LocationColumns._ID + " INTEGER PRIMARY KEY, " +
                     LocationColumns.TITLE + " TEXT NOT NULL, " +
                     LocationColumns.LATITUDE + " DOUBLE, " +
-                    LocationColumns.LONGITUDE + " DOUBLE);";
+                    LocationColumns.LONGITUDE + " DOUBLE, " +
+                    LocationColumns.LINE_NAME + " TEXT );";
 
     /** シングルトン対応のインスタンス */
     private static LocationOpenHelper sLocationOpenHelper;
@@ -53,12 +56,27 @@ public class LocationOpenHelper extends SQLiteOpenHelper {
 
         // テーブルを作成
         db.execSQL(LOCATION_TABLE_CREATE);
-        Log.d("tag", "create table");
+        Log.d(TAG, "create table");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d(TAG, "onUpgrade: ");
 
+        int oldVersionTemp = oldVersion;
+
+        // DBのバージョンアップがあるか
+        while (newVersion > oldVersionTemp) {
+            ++oldVersionTemp;
+
+            switch (oldVersionTemp) {
+
+                // 登録駅データの路線名を拡張
+                case 2:
+                    LocationDao.alterTableLineName();
+                    break;
+            }
+        }
     }
 }
