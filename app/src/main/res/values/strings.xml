@@ -3,8 +3,8 @@
     <string name="set_station">駅を指定</string>
     <string name="set_time">時間を指定</string>
     <string name="set_location">現在地を指定</string>
-    <string name="started_check_location">アラームセット中。停止はタップ</string>
-    <string name="not_start_check_location">チェックをスタートする</string>
+    <string name="started_check_location">チェックをストップ</string>
+    <string name="not_start_check_location">チェックをスタート</string>
 
     <!--通知-->
     <string name="notification_title">時間です</string>
@@ -19,7 +19,7 @@
     <string name="tutorial_first_step_text1">画面上部の電車マークをタップ。</string>
     <string name="tutorial_first_step_text2">都道府県を選択して、降りたい駅の沿線から駅を選びましょう。</string>
     <string name="tutorial_second_step_read_text">②位置情報のチェックをスタート</string>
-    <string name="tutorial_second_step_text1">電車に乗ったら「チェックをスタートする」ボタンをタップ。</string>
+    <string name="tutorial_second_step_text1">電車に乗ったら「チェックをスタート」ボタンをタップ。</string>
     <string name="tutorial_second_step_text2">位置情報の取得が始まり、登録駅に到着すると通知とバイブレーションでお知らせします。</string>
     <string name="tutorial_detail_text1">※詳細な利用方法は</string>
     <string name="tutorial_detail_text2"><u>GooglePlayストア</u></string>
