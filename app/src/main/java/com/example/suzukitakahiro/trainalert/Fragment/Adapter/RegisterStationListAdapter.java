@@ -3,6 +3,7 @@ package com.example.suzukitakahiro.trainalert.Fragment.Adapter;
 import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class RegisterStationListAdapter extends ArrayAdapter<RegisterStationDto>
             viewHolder.stationName.setText(dto.station_name);
 
             // 路線名はDBバージョン１では保存していないので、空の場合がある
-            if (!dto.line_name.isEmpty()) {
+            if (!TextUtils.isEmpty(dto.line_name)) {
                 viewHolder.lineName.setText(dto.line_name);
                 viewHolder.lineName.setVisibility(View.VISIBLE);
             }
