@@ -153,6 +153,8 @@ public class MainFragment extends BaseFragment
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if (data.getCount() == 0) {
+                // 登録駅情報が無い場合はチュートリアルを表示する
+
                 mView.post(new Runnable() {
                     @Override
                     public void run() {

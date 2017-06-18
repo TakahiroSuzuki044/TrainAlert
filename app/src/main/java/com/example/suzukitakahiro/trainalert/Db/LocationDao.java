@@ -130,7 +130,8 @@ public class LocationDao {
                 LocationColumns._ID,
                 LocationColumns.TITLE,
                 LocationColumns.LATITUDE,
-                LocationColumns.LONGITUDE
+                LocationColumns.LONGITUDE,
+                LocationColumns.LINE_NAME
         };
 
         String[] selectionArgs = null;
