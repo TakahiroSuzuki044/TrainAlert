@@ -16,4 +16,13 @@
         android:textColor="@color/black"
         tools:text="駅名テキスト"/>
 
+    <TextView
+        android:id="@+id/main_list_item_line_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="1dp"
+        android:textSize="15dp"
+        android:textColor="@color/gray_black"
+        tools:text="沿線テキスト"/>
+
 </LinearLayout>
