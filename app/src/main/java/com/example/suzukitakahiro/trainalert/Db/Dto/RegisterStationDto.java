@@ -11,6 +11,9 @@ import android.os.Parcelable;
 
 public class RegisterStationDto implements Parcelable{
 
+    /** ID */
+    public int _id = -1;
+
     /** 路線コード */
     public String line_cd = null;
 

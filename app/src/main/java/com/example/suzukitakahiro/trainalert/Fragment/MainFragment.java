@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,9 +20,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.suzukitakahiro.trainalert.Db.LocationColumns;
+import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
+import com.example.suzukitakahiro.trainalert.Fragment.Adapter.RegisterStationListAdapter;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Service.LocationService;
 import com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil;
@@ -34,6 +33,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP;
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK;
@@ -61,7 +63,10 @@ public class MainFragment extends BaseFragment
     public static final int REQUEST_CODE_SETTING_RESOLUTION = 1;
     public static final int RESOLVE_CODE_CONNECTION_RESOLUTION = 2;
 
-    private SimpleCursorAdapter mSimpleCursorAdapter;
+    private RegisterStationListAdapter mAdapter;
+
+    /** 登録駅情報Dto */
+    private List<RegisterStationDto>  mRegStationDtos;
 
     private View mView;
 
@@ -118,15 +123,12 @@ public class MainFragment extends BaseFragment
      * 登録したアラーム情報の一覧を作成
      */
     private void setListView() {
-        String[] from = {LocationColumns.TITLE};
-        int[] to = {R.id.main_list_item_station_name};
-
-        mSimpleCursorAdapter = new SimpleCursorAdapter
-                (getActivity(), R.layout.list_item_main, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        mRegStationDtos = new ArrayList<>();
+        mAdapter = new RegisterStationListAdapter(getContext(), R.layout.list_item_main, mRegStationDtos);
 
         ListView listView = (ListView) mView.findViewById(R.id.location_list_view);
         if (listView != null) {
-            listView.setAdapter(mSimpleCursorAdapter);
+            listView.setAdapter(mAdapter);
             listView.setOnItemLongClickListener(this);
         }
     }
@@ -151,7 +153,7 @@ public class MainFragment extends BaseFragment
         }
 
         @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
             if (data.getCount() == 0) {
                 // 登録駅情報が無い場合はチュートリアルを表示する
 
@@ -171,13 +173,17 @@ public class MainFragment extends BaseFragment
                     }
                 });
             }
+            mRegStationDtos = LocationDao.parseCursor(data);
+            mAdapter.clear();
+            mAdapter.addAll(mRegStationDtos);
+
             // Cursorのデータを新しく置き換え
-            mSimpleCursorAdapter.swapCursor(data);
+            mAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-            mSimpleCursorAdapter.swapCursor(null);
+            mAdapter.notifyDataSetChanged();
         }
     };
 
@@ -186,8 +192,13 @@ public class MainFragment extends BaseFragment
      */
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(TAG, "onItemLongClick: " + "position: " + position + "id: " + id);
 
-        DeleteDialog deleteDialog = DeleteDialog.getInstance(id, this);
+        // 削除するレコードのIDを取得する
+        RegisterStationDto item = (RegisterStationDto) parent.getItemAtPosition(position);
+        int deleteId = item._id;
+
+        DeleteDialog deleteDialog = DeleteDialog.getInstance(deleteId, this);
         deleteDialog.show(getActivity().getSupportFragmentManager(), "AskDeleteDialog");
 
         // trueを返すことでOnItemClickが呼ばれなくるなる

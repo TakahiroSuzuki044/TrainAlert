@@ -3,6 +3,7 @@ package com.example.suzukitakahiro.trainalert.Db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.location.Location;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -10,6 +11,8 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
 import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
+
+import java.util.ArrayList;
 
 import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LATITUDE_COLUMN;
 import static com.example.suzukitakahiro.trainalert.Db.LocationColumns.LOCATION_TABLE_NAME;
@@ -160,6 +163,29 @@ public class LocationDao {
         return deleteCount != -1;
     }
 
+    public static ArrayList<RegisterStationDto> parseCursor(Cursor cursor) {
+        ArrayList<RegisterStationDto> dtoList = new ArrayList<>();
+        ArrayList<ContentValues> cvList = new ArrayList<>();
+
+        // Cursorで取得した情報をContentValuesにListで格納する
+        while (cursor.moveToNext()) {
+            ContentValues cv = new ContentValues();
+            DatabaseUtils.cursorRowToContentValues(cursor, cv);
+            cvList.add(cv);
+        }
+
+        // ContentValuesのListに格納した情報をDtoに入れ込む
+        for (ContentValues cv: cvList) {
+            RegisterStationDto dto = new RegisterStationDto();
+            dto._id = cv.getAsInteger(LocationColumns._ID);
+            dto.station_name = cv.getAsString(LocationColumns.TITLE);
+            dto.line_name = cv.getAsString(LocationColumns.LINE_NAME);
+            dto.st_latitude = cv.getAsDouble(LocationColumns.LATITUDE);
+            dto.st_longitude = cv.getAsDouble(LocationColumns.LONGITUDE);
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
 
     @NonNull
     static String alterTableLineName() {

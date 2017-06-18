@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
 import com.example.suzukitakahiro.trainalert.R;
 
+import java.util.List;
+
 /**
  * 登録駅を表示するAdapter
  *
@@ -22,25 +24,24 @@ public class RegisterStationListAdapter extends ArrayAdapter<RegisterStationDto>
 
     private LayoutInflater mLayoutInflater;
 
-    public RegisterStationListAdapter(@NonNull Context context, @LayoutRes int resource) {
-        super(context, resource);
+    public RegisterStationListAdapter(@NonNull Context context, @LayoutRes int resource, List<RegisterStationDto> item) {
+        super(context, resource, item);
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        View view = null;
-        ViewHolder viewHolder = null;
+        ViewHolder viewHolder;
 
         if (convertView == null) {
-            view = mLayoutInflater.inflate(R.layout.list_item_main, parent, false);
+            convertView = mLayoutInflater.inflate(R.layout.list_item_main, parent, false);
             viewHolder = new ViewHolder();
-            viewHolder.stationName = (TextView) view.findViewById(R.id.main_list_item_station_name);
-            viewHolder.lineName = (TextView) view.findViewById(R.id.main_list_item_line_name);
-            view.setTag(viewHolder);
+            viewHolder.stationName = (TextView) convertView.findViewById(R.id.main_list_item_station_name);
+            viewHolder.lineName = (TextView) convertView.findViewById(R.id.main_list_item_line_name);
+            convertView.setTag(viewHolder);
         } else {
-            viewHolder = (ViewHolder) view.getTag();
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
         RegisterStationDto dto = getItem(position);
@@ -54,7 +55,7 @@ public class RegisterStationListAdapter extends ArrayAdapter<RegisterStationDto>
             }
         }
 
-        return view;
+        return convertView;
     }
 
     private class ViewHolder {
