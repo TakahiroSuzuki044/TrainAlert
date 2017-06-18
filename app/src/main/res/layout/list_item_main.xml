@@ -23,6 +23,8 @@
         android:padding="1dp"
         android:textSize="15dp"
         android:textColor="@color/gray_black"
-        tools:text="沿線テキスト"/>
+        android:visibility="gone"
+        tools:text="沿線テキスト"
+        tools:visibility="visible"/>
 
 </LinearLayout>
