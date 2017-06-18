@@ -74,7 +74,7 @@ public class LocationOpenHelper extends SQLiteOpenHelper {
 
                 // 登録駅データの路線名を拡張
                 case 2:
-                    LocationDao.alterTableLineName();
+                    db.execSQL(LocationDao.alterTableLineName());
                     break;
             }
         }
