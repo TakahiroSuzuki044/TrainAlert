@@ -29,7 +29,7 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PR
 
 /**
  * 路線画面フラグメント
- *
+ * <p>
  * - 選択された都道府県IDで駅DBの内、IDと被る駅の路線IDを取得
  * - 取得した路線IDの内、重複を取り除く
  * - 重複を取り除いた路線IDで路線テーブル検索をして、路線名/IDを取得、Listで表示
@@ -43,9 +43,13 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
     private View mView;
     private SimpleCursorAdapter mSimpleCursorAdapter;
 
-    /** 駅テーブルで都道府県コードから路線コード取得 */
+    /**
+     * 駅テーブルで都道府県コードから路線コード取得
+     */
     private static final int FIND_STATION_BY_PREF_CD = 1;
-    /** 路線テーブルで路線コードから路線コード/路線名を取得 */
+    /**
+     * 路線テーブルで路線コードから路線コード/路線名を取得
+     */
     private static final int FIND_LINE_BY_LINE_CD = 2;
 
     @Override
@@ -105,7 +109,7 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
 
                 // TODO: 16/09/25 lineCdsが空のときの挙動確認
                 // 路線コードで路線検索
-                String[] lineCds = (String[])lineCdList.toArray(new String[0]);
+                String[] lineCds = (String[]) lineCdList.toArray(new String[0]);
                 Bundle bundle = new Bundle();
                 bundle.putStringArray(LINE_CD, lineCds);
                 getActivity().getSupportLoaderManager().initLoader(FIND_LINE_BY_LINE_CD, bundle, this);
@@ -120,7 +124,8 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {}
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
 
     /**
      * 一覧を作成
@@ -132,7 +137,7 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
         mSimpleCursorAdapter = new SimpleCursorAdapter
                 (mContext, R.layout.list_item_select, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-        ListView listView = (ListView)mView.findViewById(R.id.select_list_view);
+        ListView listView = (ListView) mView.findViewById(R.id.select_list_view);
         listView.setAdapter(mSimpleCursorAdapter);
 
         listView.setOnItemClickListener(this);
@@ -164,7 +169,7 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
     /**
      * リスト中に既に同一の文字があるかチェックする。
      *
-     * @param lineCdList リスト
+     * @param lineCdList  リスト
      * @param checkLineCd チェックされる文字
      * @return 重複がない場合はtrue
      */

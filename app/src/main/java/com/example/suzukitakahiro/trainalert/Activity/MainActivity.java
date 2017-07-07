@@ -69,12 +69,11 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == MainFragment.REQUEST_CODE_SETTING_RESOLUTION
-                || requestCode == MainFragment.RESOLVE_CODE_CONNECTION_RESOLUTION){
+                || requestCode == MainFragment.RESOLVE_CODE_CONNECTION_RESOLUTION) {
 
             // GoogleApiClientを切断する
             mFragment.onActivityResult(requestCode, resultCode, data);
-        }
-        else {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }

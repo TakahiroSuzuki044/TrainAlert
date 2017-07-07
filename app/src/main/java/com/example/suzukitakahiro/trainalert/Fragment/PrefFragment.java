@@ -32,16 +32,16 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
     private Context mContext;
     private View mView;
     private SimpleCursorAdapter mSimpleCursorAdapter;
-    
+
     private static final int FIND_ALL = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = getContext();
         mView = inflater.inflate(R.layout.fragment_select, container, false);
-        
+
         setListView();
-        
+
         // 都道府県リスト読み込みスタート
         getActivity().getSupportLoaderManager().initLoader(FIND_ALL, null, this);
         return mView;
@@ -67,9 +67,10 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {}
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
 
-    /** 
+    /**
      * 一覧を作成
      */
     private void setListView() {
@@ -79,12 +80,12 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
         mSimpleCursorAdapter = new SimpleCursorAdapter
                 (mContext, R.layout.list_item_select, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-        ListView listView = (ListView)mView.findViewById(R.id.select_list_view);
+        ListView listView = (ListView) mView.findViewById(R.id.select_list_view);
         listView.setAdapter(mSimpleCursorAdapter);
 
         listView.setOnItemClickListener(this);
     }
-    
+
     /**
      * リスト選択時の処理
      */

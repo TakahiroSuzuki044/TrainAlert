@@ -7,20 +7,26 @@ import android.util.Log;
 
 /**
  * @author suzukitakahiro on 2016/09/01.
- *
- * アラーム位置のOpenHelper
+ *         <p>
+ *         アラーム位置のOpenHelper
  */
 public class LocationOpenHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "LocationOpenHelper";
 
-    /** データベース名 */
+    /**
+     * データベース名
+     */
     private static final String DATABASE_NAME = "Location.db";
 
-    /** データベースバージョン */
+    /**
+     * データベースバージョン
+     */
     private static final int DATABASE_VERSION = 2;
 
-    /** 現在地テーブルのクリエイト文 */
+    /**
+     * 現在地テーブルのクリエイト文
+     */
     private static final String LOCATION_TABLE_CREATE =
             "CREATE TABLE " + LocationColumns.LOCATION_TABLE_NAME + " (" +
                     LocationColumns._ID + " INTEGER PRIMARY KEY, " +
@@ -29,10 +35,14 @@ public class LocationOpenHelper extends SQLiteOpenHelper {
                     LocationColumns.LONGITUDE + " DOUBLE, " +
                     LocationColumns.LINE_NAME + " TEXT );";
 
-    /** シングルトン対応のインスタンス */
+    /**
+     * シングルトン対応のインスタンス
+     */
     private static LocationOpenHelper sLocationOpenHelper;
 
-    /** コンテキスト */
+    /**
+     * コンテキスト
+     */
     private LocationOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -40,7 +50,7 @@ public class LocationOpenHelper extends SQLiteOpenHelper {
     /**
      * 本クラスインスタンスのゲッター
      *
-     * @param context   コンテキスト
+     * @param context コンテキスト
      * @return 本クラスのインスタンス
      */
     public static synchronized LocationOpenHelper getInstance(Context context) {

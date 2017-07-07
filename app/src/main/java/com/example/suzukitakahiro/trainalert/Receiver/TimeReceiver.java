@@ -8,16 +8,16 @@ import com.example.suzukitakahiro.trainalert.Uitl.NotificationUtil;
 
 /**
  * @author suzukitakahiro on 2016/08/21.
- *
- * 時間指定でのブロードキャストレシーバー
+ *         <p>
+ *         時間指定でのブロードキャストレシーバー
  */
 public class TimeReceiver extends BroadcastReceiver {
 
     /**
      * ブロードキャストをキャッチした場合、HeadsUpNotificationを通知する
      *
-     * @param context   コンテキスト
-     * @param intent    TimeReceiver
+     * @param context コンテキスト
+     * @param intent  TimeReceiver
      */
     @Override
     public void onReceive(Context context, Intent intent) {

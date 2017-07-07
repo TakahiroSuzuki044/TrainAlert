@@ -9,7 +9,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 /**
- * @author  suzukitakahiro on 2016/07/24.
+ * @author suzukitakahiro on 2016/07/24.
  */
 public class MapActivity extends BaseActivity implements OnMapReadyCallback {
 

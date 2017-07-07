@@ -2,7 +2,7 @@ package com.example.suzukitakahiro.trainalert.Uitl;
 
 /**
  * Created by suzukitakahiro on 2016/12/25.
- *
+ * <p>
  * コンスタントUtil
  */
 public class ConstantsUtil {

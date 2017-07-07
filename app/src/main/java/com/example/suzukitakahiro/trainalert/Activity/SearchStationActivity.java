@@ -12,7 +12,7 @@ import com.example.suzukitakahiro.trainalert.R;
  *
  * @author suzukitakahiro on 16/09/21.
  */
-public class SearchStationActivity extends BaseActivity{
+public class SearchStationActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

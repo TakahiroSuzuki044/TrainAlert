@@ -9,8 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:orientation="vertical"
-        android:layout_margin="25dp">
+        android:layout_margin="25dp"
+        android:orientation="vertical">
 
         <TextView
             style="@style/TutorialTitleTheme"
@@ -34,8 +34,8 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/train_black"
-                android:contentDescription="@string/tutorial_first_step_read_train"/>
+                android:contentDescription="@string/tutorial_first_step_read_train"
+                android:src="@drawable/train_black"/>
 
             <TextView
                 style="@style/TutorialReadTheme"
@@ -50,6 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tutorial_first_step_text1"/>
+
         <TextView
             style="@style/TutorialTextTheme"
             android:layout_width="match_parent"
@@ -65,11 +66,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tutorial_second_step_read_text"/>
+
         <TextView
             style="@style/TutorialTextTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tutorial_second_step_text1"/>
+
         <TextView
             style="@style/TutorialTextTheme"
             android:layout_width="match_parent"
@@ -81,24 +84,26 @@
             android:layout_height="wrap_content">
 
             <TextView
-                style="@style/TutorialDetailTextTheme"
                 android:id="@+id/tutorial_detail_text1"
+                style="@style/TutorialDetailTextTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/tutorial_detail_text2"
                 android:text="@string/tutorial_detail_text1"/>
+
             <TextView
-                style="@style/TutorialDetailTextTheme"
                 android:id="@+id/tutorial_detail_text2"
+                style="@style/TutorialDetailTextTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/tutorial_detail_text3"
                 android:clickable="true"
-                android:textColor="@color/link_blue"
-                android:text="@string/tutorial_detail_text2"/>
+                android:text="@string/tutorial_detail_text2"
+                android:textColor="@color/link_blue"/>
+
             <TextView
-                style="@style/TutorialDetailTextTheme"
                 android:id="@+id/tutorial_detail_text3"
+                style="@style/TutorialDetailTextTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

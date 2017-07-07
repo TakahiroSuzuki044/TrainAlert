@@ -14,15 +14,21 @@ import java.io.InputStreamReader;
  *
  * @author suzukitakahiro on 16/09/18.
  */
-public class MasterOpenHelper extends SQLiteOpenHelper{
+public class MasterOpenHelper extends SQLiteOpenHelper {
 
-    /** データベース名 */
+    /**
+     * データベース名
+     */
     private static final String DATABASE_NAME = "master.db";
 
-    /** データベースバージョン */
+    /**
+     * データベースバージョン
+     */
     private static final int DATABASE_VERSION = 1;
 
-    /** シングルトン対応のインスタンス */
+    /**
+     * シングルトン対応のインスタンス
+     */
     private static MasterOpenHelper sMasterOpenHelper;
 
     private Context mContext;

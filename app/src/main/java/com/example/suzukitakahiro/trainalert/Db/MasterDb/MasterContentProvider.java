@@ -14,7 +14,9 @@ import android.support.annotation.Nullable;
  */
 public class MasterContentProvider extends ContentProvider {
 
-    /** コンテンツUri */
+    /**
+     * コンテンツUri
+     */
     public static final String SCHEME = "content://";
     public static final String AUTHORITY = "com.example.suzukitakahiro.trainalert.MasterContentProvider";
 
