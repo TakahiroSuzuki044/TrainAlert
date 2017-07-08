@@ -10,6 +10,7 @@ import android.os.Process;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -19,6 +20,7 @@ import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.AlarmUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.DialogUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.GoogleApi.FusedLocationUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.PreferencesUtil;
 
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP;
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK;
@@ -45,8 +47,23 @@ public class MainActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mFragment = new MainFragment();
-        setFragment(mFragment);
+        String startUp = PreferencesUtil
+                .getStringPreference(getApplicationContext(), PreferencesUtil.PREF_KEY_IS_FIRST_START_UP);
+
+        // 初回起動の場合はNull
+        if (TextUtils.isEmpty(startUp)) {
+            // 初回起動
+            // TODO: 2017/07/07 初回起動のため、都道府県選択画面へ遷移させる
+
+            // 初回起動が完了したことを保存する
+            PreferencesUtil.saveStringPreference(getApplicationContext(),
+                    PreferencesUtil.PREF_KEY_IS_FIRST_START_UP, PreferencesUtil.PREF_VALUE_AFTER_START_UP);
+        } else {
+            // 通常起動
+
+            mFragment = new MainFragment();
+            setFragment(mFragment);
+        }
     }
 
     @Override
