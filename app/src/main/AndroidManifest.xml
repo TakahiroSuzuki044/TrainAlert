@@ -38,6 +38,9 @@
         <activity
             android:name=".Activity.SearchStationActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Activity.AreaActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- 指定時間に飛ばすIntentを受け取るレシーバー -->
         <receiver android:name=".Receiver.TimeReceiver">

@@ -10,12 +10,12 @@ import android.os.Process;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.Fragment.MainFragment;
+import com.example.suzukitakahiro.trainalert.Fragment.PrefFragment;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.AlarmUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.DialogUtil;
@@ -47,23 +47,8 @@ public class MainActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        String startUp = PreferencesUtil
-                .getStringPreference(getApplicationContext(), PreferencesUtil.PREF_KEY_IS_FIRST_START_UP);
-
-        // 初回起動の場合はNull
-        if (TextUtils.isEmpty(startUp)) {
-            // 初回起動
-            // TODO: 2017/07/07 初回起動のため、都道府県選択画面へ遷移させる
-
-            // 初回起動が完了したことを保存する
-            PreferencesUtil.saveStringPreference(getApplicationContext(),
-                    PreferencesUtil.PREF_KEY_IS_FIRST_START_UP, PreferencesUtil.PREF_VALUE_AFTER_START_UP);
-        } else {
-            // 通常起動
-
-            mFragment = new MainFragment();
-            setFragment(mFragment);
-        }
+        mFragment = new MainFragment();
+        setFragment(mFragment);
     }
 
     @Override
@@ -115,8 +100,19 @@ public class MainActivity extends BaseActivity {
 
             // 都道府県指定画面へ遷移
             case R.id.select_station:
-                Intent intent = new Intent(this, SearchStationActivity.class);
-                startActivity(intent);
+                int prefCd = PreferencesUtil.getIntPreference(
+                        getApplicationContext(), PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE);
+
+                if (PreferencesUtil.isExistForInt(prefCd)) {
+                    Intent intent = new Intent(this, SearchStationActivity.class);
+                    intent.putExtra(PrefFragment.INTENT_KEY_PREFECTURES, prefCd);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(this, AreaActivity.class);
+
+                    // MainFragmentに値を返却する
+                    startActivity(intent);
+                }
                 break;
 
             // 時間指定ダイアログを表示

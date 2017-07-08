@@ -1,5 +1,6 @@
 package com.example.suzukitakahiro.trainalert.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.suzukitakahiro.trainalert.Activity.AreaActivity;
 import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
 import com.example.suzukitakahiro.trainalert.Db.LocationDao;
 import com.example.suzukitakahiro.trainalert.Dialog.DeleteDialog;
@@ -28,6 +30,7 @@ import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Service.LocationService;
 import com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.GoogleApi.LocationSettingUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.PreferencesUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.ServiceUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Status;
@@ -63,6 +66,11 @@ public class MainFragment extends BaseFragment
     public static final int REQUEST_CODE_SETTING_RESOLUTION = 1;
     public static final int RESOLVE_CODE_CONNECTION_RESOLUTION = 2;
 
+    /**
+     * リクエストコード：都道府県選択画面へ
+     */
+    private static final int REQ_CODE_AREA_ACTIVITY = 10;
+
     private RegisterStationListAdapter mAdapter;
 
     /**
@@ -84,6 +92,11 @@ public class MainFragment extends BaseFragment
      */
     private boolean mIsCheckingLocationSetting;
 
+    /**
+     * 都道府県コード
+     */
+    int mPrefCd;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -96,6 +109,17 @@ public class MainFragment extends BaseFragment
         mView.findViewById(R.id.tutorial_detail_text2).setOnClickListener(this);
         if (mLocationCheckButton != null) {
             mLocationCheckButton.setOnClickListener(this);
+        }
+
+        mPrefCd = PreferencesUtil
+                .getIntPreference(getContext(), PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE);
+
+        // 都道府県コードの保存値がない場合、都道府県を選ばせる
+        if (!PreferencesUtil.isExistForInt(mPrefCd)) {
+            Intent intent = new Intent(getActivity(), AreaActivity.class);
+
+            // MainFragmentに値を返却する
+            startActivityForResult(intent, REQ_CODE_AREA_ACTIVITY);
         }
 
         // リストをセット
@@ -420,15 +444,23 @@ public class MainFragment extends BaseFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
 
-            // 位置情報の取得設定を再設定
             case REQUEST_CODE_SETTING_RESOLUTION:
             case RESOLVE_CODE_CONNECTION_RESOLUTION:
+                // 位置情報の取得設定を再設定
 
                 // 設定チェックの終了
                 mLocationSettingUtil.stopLocationSettingChecking();
 
                 // 二重押し解禁
                 mLocationCheckButton.setEnabled(true);
+                break;
+            case REQ_CODE_AREA_ACTIVITY:
+                // 都道府県画面からの戻り
+
+                if (resultCode == Activity.RESULT_OK) {
+                    mPrefCd = PreferencesUtil.getIntPreference(
+                            getContext(), PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE);
+                }
                 break;
         }
     }
