@@ -21,6 +21,9 @@ public class AreaActivity extends BaseActivity {
         // ツールバーの設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         setFragment(new PrefFragment());
     }

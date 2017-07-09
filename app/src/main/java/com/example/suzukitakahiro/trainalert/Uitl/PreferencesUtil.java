@@ -28,7 +28,7 @@ public class PreferencesUtil {
     /**
      * 存在しない場合の返却値
      */
-    public static final int PREF_VALUE_NOT_EXIST = -1;
+    private static final int PREF_VALUE_NOT_EXIST = -1;
 
     /**
      * データが保存されているか

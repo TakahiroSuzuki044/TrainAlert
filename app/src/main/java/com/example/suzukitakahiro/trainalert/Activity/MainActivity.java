@@ -61,7 +61,7 @@ public class MainActivity extends BaseActivity {
         AreaDto areaDto = (AreaDto) PreferencesUtil
                 .getObjectPreference(getApplicationContext(), PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE, new AreaDto());
 
-        // 都道府県コードの保存値がない場合、都道府県を選ばせる
+        // 都道府県が保存されていない場合、都道府県を選ばせる
         if (areaDto == null) {
             Intent intent = new Intent(getApplicationContext(), AreaActivity.class);
 
