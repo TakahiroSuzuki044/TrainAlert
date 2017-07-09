@@ -20,4 +20,11 @@
         android:title="@string/set_location"
         android:visible="false"/>
 
+    <item
+        android:id="@+id/prefectures_name"
+        android:enabled="false"
+        android:title="@string/set_prefectures_name"
+        app:actionLayout="@layout/menu_prefectures_name"
+        app:showAsAction="always"/>
+
 </menu>

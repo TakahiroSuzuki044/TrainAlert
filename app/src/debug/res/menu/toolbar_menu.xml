@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/select_station"
-        android:title="@string/set_station"
         android:icon="@drawable/train"
+        android:title="@string/set_station"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/select_time"
-        android:title="@string/set_time"
         android:icon="@drawable/time"
+        android:title="@string/set_time"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/select_location"
-        android:title="@string/set_location"
         android:icon="@drawable/location"
+        android:title="@string/set_location"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction"/>
+
+    <item
+        android:id="@+id/prefectures_name"
+        android:enabled="false"
+        android:title="@string/set_prefectures_name"
+        app:actionLayout="@layout/menu_prefectures_name"
         app:showAsAction="always"/>
 
 </menu>

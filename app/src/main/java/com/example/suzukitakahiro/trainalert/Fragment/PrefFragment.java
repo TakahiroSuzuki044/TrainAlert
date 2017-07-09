@@ -2,7 +2,6 @@ package com.example.suzukitakahiro.trainalert.Fragment;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -15,12 +14,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.suzukitakahiro.trainalert.Db.Dto.AreaDto;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.PrefDao;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.PreferencesUtil;
 
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_CD_COLUMN;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_NAME;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_NAME_COLUMN;
 
 
 /**
@@ -101,15 +102,16 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
 
         // 選択された都道府県コードを取得
         Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-        int prefCd = cursor.getInt(PREF_CD_COLUMN);
+
+        AreaDto areaDto = new AreaDto();
+        areaDto.pref_cd = cursor.getInt(PREF_CD_COLUMN);
+        areaDto.pref_name = cursor.getString(PREF_NAME_COLUMN);
 
         // 都道府県コードを保存する
-        PreferencesUtil.saveIntPreference(getContext(),
-                PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE, prefCd);
+        PreferencesUtil.savedObjectPreference(getContext(),
+                PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE, areaDto);
 
-        Intent data = new Intent();
-        data.putExtra(INTENT_KEY_PREFECTURES, prefCd);
-        getActivity().setResult(Activity.RESULT_OK, data);
+        getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
     }
 }

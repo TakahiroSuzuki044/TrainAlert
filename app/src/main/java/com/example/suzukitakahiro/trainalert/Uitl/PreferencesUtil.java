@@ -2,6 +2,10 @@ package com.example.suzukitakahiro.trainalert.Uitl;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
 
 /**
  * SharedPreferencesを管理するUtilクラス
@@ -60,5 +64,41 @@ public class PreferencesUtil {
     public static int getIntPreference(Context context, String prefKey) {
         SharedPreferences sp = context.getSharedPreferences(PREF_KEY_FOR_PREFERENCES_UTIL, Context.MODE_PRIVATE);
         return sp.getInt(prefKey, PREF_VALUE_NOT_EXIST);
+    }
+
+    /**
+     * プリファレンスで文字列を保存する
+     *
+     * @param context コンテキスト
+     * @param prefKey 保存するKey
+     * @param object  保存する任意のオブジェクト
+     */
+    public static void savedObjectPreference(Context context, String prefKey, Object object) {
+        Gson gson = new Gson();
+
+        SharedPreferences sp = context.getSharedPreferences(PREF_KEY_FOR_PREFERENCES_UTIL, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(prefKey, gson.toJson(object));
+        editor.apply();
+    }
+
+    /**
+     * プリファレンスで保存した文字列を返却する
+     *
+     * @param context コンテキスト
+     * @param prefKey 保存で利用したKey
+     * @param object  取り出したい型のオブジェクト
+     * @return オブジェクト
+     */
+    @Nullable
+    public static Object getObjectPreference(Context context, String prefKey, Object object) {
+        Gson gson = new Gson();
+        SharedPreferences sp = context.getSharedPreferences(PREF_KEY_FOR_PREFERENCES_UTIL, Context.MODE_PRIVATE);
+        String jsonStrong = sp.getString(prefKey, null);
+        if (TextUtils.isEmpty(jsonStrong)) {
+            return null;
+        } else {
+            return gson.fromJson(jsonStrong, object.getClass());
+        }
     }
 }

@@ -3,6 +3,8 @@
     <string name="set_station">駅を指定</string>
     <string name="set_time">時間を指定</string>
     <string name="set_location">現在地を指定</string>
+    <string name="set_prefectures_name">設定した都道府県名</string>
+    <string name="prefectures_default_name">未設定</string>
     <string name="started_check_location">チェックをストップ</string>
     <string name="not_start_check_location">チェックをスタート</string>
 
