@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 
 import com.example.suzukitakahiro.trainalert.Fragment.LineFragment;
 import com.example.suzukitakahiro.trainalert.Fragment.PrefFragment;
@@ -30,6 +31,10 @@ public class SearchStationActivity extends BaseActivity {
         // ツールバーの設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         int prefCd = getIntent().getIntExtra(
                 PrefFragment.INTENT_KEY_PREFECTURES, -1);
@@ -76,11 +81,23 @@ public class SearchStationActivity extends BaseActivity {
                 return true;
             } else {
                 // スタックが複数存在している場合は一つポップする
-                
+
                 manager.popBackStack();
                 return true;
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+
+                // バックキー処置と同じ挙動にする
+                onKeyDown(KeyEvent.KEYCODE_BACK, null);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
