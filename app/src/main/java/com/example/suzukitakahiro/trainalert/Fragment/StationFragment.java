@@ -34,6 +34,8 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.ST
 public class StationFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,
         AdapterView.OnItemClickListener {
 
+    public static final String TAG = StationFragment.class.getName();
+
     /**
      * 登録駅情報DtoのArgsKey
      */

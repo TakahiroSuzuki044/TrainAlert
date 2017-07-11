@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.suzukitakahiro.trainalert.Activity.SearchStationActivity;
 import com.example.suzukitakahiro.trainalert.Db.Dto.RegisterStationDto;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.LineDao;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.StationDao;
@@ -38,6 +39,8 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PR
  */
 public class LineFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,
         AdapterView.OnItemClickListener {
+
+    public static final String TAG = LineFragment.class.getName();
 
     private Context mContext;
     private View mView;
@@ -163,6 +166,10 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
         bundle.putParcelable(StationFragment.ARGS_KEY_REGISTER_STATION_DTO, regStationDto);
         Fragment stationFragment = new StationFragment();
         stationFragment.setArguments(bundle);
+        if (getActivity() instanceof SearchStationActivity) {
+            ((SearchStationActivity) getActivity())
+                    .setFragmentAddBackStack(stationFragment, StationFragment.TAG);
+        }
         setFragment(stationFragment);
     }
 
