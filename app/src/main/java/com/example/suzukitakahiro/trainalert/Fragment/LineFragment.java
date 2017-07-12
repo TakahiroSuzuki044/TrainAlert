@@ -8,6 +8,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,11 @@ public class LineFragment extends BaseFragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = getContext();
         mView = inflater.inflate(R.layout.fragment_select, container, false);
+
+        ActionBar actionBar = initActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.toolbar_select_line);
+        }
 
         // 選択された都道府県CDを取得
         Bundle args = getArguments();

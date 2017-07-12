@@ -1,7 +1,7 @@
 package com.example.suzukitakahiro.trainalert.Activity;
 
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBar;
 
 import com.example.suzukitakahiro.trainalert.Fragment.PrefFragment;
 import com.example.suzukitakahiro.trainalert.R;
@@ -19,10 +19,10 @@ public class AreaActivity extends BaseActivity {
         setContentView(R.layout.activity_search_station);
 
         // ツールバーの設定
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = initActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.toolbar_select_preferences);
         }
 
         setFragment(new PrefFragment());

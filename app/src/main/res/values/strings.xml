@@ -8,6 +8,11 @@
     <string name="started_check_location">チェックをストップ</string>
     <string name="not_start_check_location">チェックをスタート</string>
 
+    <!-- ツールバー -->
+    <string name="toolbar_select_preferences">都道府県を選ぶ</string>
+    <string name="toolbar_select_line">沿線を選ぶ</string>
+    <string name="toolbar_select_station">駅を選ぶ</string>
+
     <!--通知-->
     <string name="notification_title">時間です</string>
     <string name="notification_text_for_time">指定した時刻になりました</string>
