@@ -12,10 +12,10 @@ import java.util.Calendar;
 
 /**
  * @author suzukitakahiro on 2016/08/21.
- *
- * 時間を指定してアラートを登録するダイアログ
+ *         <p>
+ *         時間を指定してアラートを登録するダイアログ
  */
-public class TimeSelectDialog extends DialogFragment implements TimePickerDialog.OnTimeSetListener{
+public class TimeSelectDialog extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

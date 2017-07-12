@@ -17,7 +17,7 @@ import java.util.Date;
 
 /**
  * Created by suzukitakahiro on 2017/03/13.
- *
+ * <p>
  * GooglePlayServiceを利用した現在位置取得クラス
  */
 public class FusedLocationUtil extends GoogleApiUtil implements LocationListener,
@@ -68,7 +68,8 @@ public class FusedLocationUtil extends GoogleApiUtil implements LocationListener
 
     private static FusedLocationUtil sInstance;
 
-    private FusedLocationUtil(){}
+    private FusedLocationUtil() {
+    }
 
     /**
      * 本クラスのインスタンスを返却する（シングルトン）
@@ -130,14 +131,14 @@ public class FusedLocationUtil extends GoogleApiUtil implements LocationListener
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "Connected to GoogleApiClient");
 
-         if (mRequestingLocationUpdates) {
-             startLocationUpdates();
-         }
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
     }
 
     /**
      * GoogleAPIとの接続が再確立した場合の処理
-     *
+     * <p>
      * GoogleAPIとの接続は様々な理由で解除されるため、再接続の処理を記述する必要がある。
      */
     @Override
@@ -176,6 +177,7 @@ public class FusedLocationUtil extends GoogleApiUtil implements LocationListener
      */
     public interface PlayLocationCallback {
         void onLocationChanged(Location location, String lastUpdateTime);
+
         void onConnectionError(int ErrorCode);
     }
 }

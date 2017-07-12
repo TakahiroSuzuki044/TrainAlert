@@ -1,5 +1,6 @@
 package com.example.suzukitakahiro.trainalert.Activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,20 +11,33 @@ import android.os.Process;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.example.suzukitakahiro.trainalert.Db.Dto.AreaDto;
 import com.example.suzukitakahiro.trainalert.Dialog.TimeSelectDialog;
 import com.example.suzukitakahiro.trainalert.Fragment.MainFragment;
+import com.example.suzukitakahiro.trainalert.Fragment.PrefFragment;
 import com.example.suzukitakahiro.trainalert.R;
 import com.example.suzukitakahiro.trainalert.Uitl.AlarmUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.DialogUtil;
 import com.example.suzukitakahiro.trainalert.Uitl.GoogleApi.FusedLocationUtil;
+import com.example.suzukitakahiro.trainalert.Uitl.PreferencesUtil;
 
+import static com.example.suzukitakahiro.trainalert.R.id.prefectures_name;
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP;
 import static com.example.suzukitakahiro.trainalert.Uitl.ConstantsUtil.PREF_KEY_IS_REQUESTED_STOP_LOCATION_CHECK;
 
 public class MainActivity extends BaseActivity {
+
+    /**
+     * リクエストコード：都道府県選択画面へ
+     */
+    private static final int REQ_CODE_AREA_ACTIVITY = 10;
 
     private ProgressDialog mProgressDialog;
 
@@ -44,6 +58,16 @@ public class MainActivity extends BaseActivity {
         // ツールバーの設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        AreaDto areaDto = (AreaDto) PreferencesUtil
+                .getObjectPreference(getApplicationContext(), PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE, new AreaDto());
+
+        // 都道府県が保存されていない場合、都道府県を選ばせる
+        if (areaDto == null) {
+            Intent intent = new Intent(getApplicationContext(), AreaActivity.class);
+
+            // MainFragmentに値を返却する
+            startActivityForResult(intent, REQ_CODE_AREA_ACTIVITY);
+        }
 
         mFragment = new MainFragment();
         setFragment(mFragment);
@@ -68,14 +92,21 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == MainFragment.REQUEST_CODE_SETTING_RESOLUTION
-                || requestCode == MainFragment.RESOLVE_CODE_CONNECTION_RESOLUTION){
+        switch (requestCode) {
+            case MainFragment.REQUEST_CODE_SETTING_RESOLUTION:
+            case MainFragment.RESOLVE_CODE_CONNECTION_RESOLUTION:
+                // GoogleApiClientを切断する
+                mFragment.onActivityResult(requestCode, resultCode, data);
+                break;
+            case REQ_CODE_AREA_ACTIVITY:
+                // 都道府県画面からの戻り
 
-            // GoogleApiClientを切断する
-            mFragment.onActivityResult(requestCode, resultCode, data);
-        }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
+                if (resultCode == Activity.RESULT_OK) {
+
+                    // オプションメニューを書き換える
+                    invalidateOptionsMenu();
+                }
+                break;
         }
     }
 
@@ -85,6 +116,21 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        final MenuItem item = menu.findItem(prefectures_name);
+        LinearLayout layout = (LinearLayout) item.getActionView();
+        TextView prefecturesNameTextView = (TextView) layout.findViewById(R.id.prefectures_name_menu_text_view);
+
+        AreaDto areaDto = (AreaDto) PreferencesUtil.getObjectPreference(
+                getApplicationContext(), PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE, new AreaDto());
+        if (areaDto != null && !TextUtils.isEmpty(areaDto.pref_name)) {
+            prefecturesNameTextView.setText(areaDto.pref_name);
+        }
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(item);
+            }
+        });
         return true;
     }
 
@@ -96,23 +142,37 @@ public class MainActivity extends BaseActivity {
 
         // メニューごとの挙動を設定
         switch (item.getItemId()) {
-
-            // 都道府県指定画面へ遷移
             case R.id.select_station:
-                Intent intent = new Intent(this, SearchStationActivity.class);
-                startActivity(intent);
+                // 駅指定画面へ遷移
+
+                AreaDto areaDto = (AreaDto) PreferencesUtil.getObjectPreference(
+                        getApplicationContext(), PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE, new AreaDto());
+
+                if (areaDto != null) {
+                    // 沿線選択画面へ
+
+                    Intent intent = new Intent(this, SearchStationActivity.class);
+                    intent.putExtra(PrefFragment.INTENT_KEY_PREFECTURES, areaDto.pref_cd);
+                    startActivity(intent);
+                } else {
+                    // 都道府県が選択されていないので、都道府県を選ばせる
+
+                    Intent intent = new Intent(this, AreaActivity.class);
+                    startActivityForResult(intent, REQ_CODE_AREA_ACTIVITY);
+                }
                 break;
 
-            // 時間指定ダイアログを表示
             case R.id.select_time:
+                // 時間指定ダイアログを表示
+
                 FragmentManager manager = getSupportFragmentManager();
                 TimeSelectDialog dialog = new TimeSelectDialog();
                 dialog.show(manager, "timeSelectDialog");
                 break;
 
-            // 現在地をアラーム情報として登録する
-            // 初回アップデートはこの機能を閉じてリリースする
             case R.id.select_location:
+                // 現在地をアラーム情報として登録する
+                // 初回アップデートはこの機能を閉じてリリースする
 
                 // 二重の現在地取得を防ぐため
                 if (!mIsStartedLocationSearch) {
@@ -125,6 +185,14 @@ public class MainActivity extends BaseActivity {
                     DialogUtil dialogUtil = new DialogUtil();
                     mProgressDialog = dialogUtil.showSpinnerDialog(this, mListener);
                 }
+                break;
+            case prefectures_name:
+                // 都道府県選択
+
+                Intent intent = new Intent(getApplicationContext(), AreaActivity.class);
+                startActivityForResult(intent, REQ_CODE_AREA_ACTIVITY);
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }

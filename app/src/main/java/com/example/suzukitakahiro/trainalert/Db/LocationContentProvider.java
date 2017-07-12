@@ -14,26 +14,34 @@ import static com.example.suzukitakahiro.trainalert.Db.LocationColumns._ID;
 
 /**
  * @author suzukitakahiro on 2016/09/04.
- *
- * アラーム位置テーブルのコンテンツプロバイダー
+ *         <p>
+ *         アラーム位置テーブルのコンテンツプロバイダー
  */
 public class LocationContentProvider extends ContentProvider {
 
-    /** コンテンツUri */
+    /**
+     * コンテンツUri
+     */
     public static final String SCHEME = "content://";
     public static final String AUTHORITY = "com.example.suzukitakahiro.trainalert.LocationContentProvider";
 
-    /** テーブルのMIMEタイプの設定 */
+    /**
+     * テーブルのMIMEタイプの設定
+     */
     public static final String CONTENT_TYPE =
             "vnd.android.cursor.dir" + "/" + AUTHORITY + "." + LOCATION_TABLE_NAME;
     public static final String CONTENT_ITEM_TYPE =
             "vnd.android.cursor.item/*" + "/" + AUTHORITY + "." + LOCATION_TABLE_NAME;
 
-    /** UriMatcher用の識別コード */
+    /**
+     * UriMatcher用の識別コード
+     */
     private static final int ALL_CODE = 0;
     private static final int BY_ID_CODE = 1;
 
-    /** UriMatcher */
+    /**
+     * UriMatcher
+     */
     private static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
@@ -41,7 +49,9 @@ public class LocationContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, LOCATION_TABLE_NAME + "/#", BY_ID_CODE);
     }
 
-    /** 現在地OpenHelper */
+    /**
+     * 現在地OpenHelper
+     */
     private LocationOpenHelper mLocationOpenHelper;
 
     /**
@@ -100,8 +110,8 @@ public class LocationContentProvider extends ContentProvider {
     /**
      * データベースを削除する
      *
-     * @param uri コンテンツURI
-     * @param selection 突合させるカラムを指定（今回はid）
+     * @param uri           コンテンツURI
+     * @param selection     突合させるカラムを指定（今回はid）
      * @param selectionArgs 削除するid
      */
     @Override

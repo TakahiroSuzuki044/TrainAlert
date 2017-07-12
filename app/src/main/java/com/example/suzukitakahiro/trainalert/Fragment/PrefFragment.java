@@ -1,9 +1,9 @@
 package com.example.suzukitakahiro.trainalert.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
@@ -14,12 +14,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.suzukitakahiro.trainalert.Db.Dto.AreaDto;
 import com.example.suzukitakahiro.trainalert.Db.MasterDb.PrefDao;
 import com.example.suzukitakahiro.trainalert.R;
+import com.example.suzukitakahiro.trainalert.Uitl.PreferencesUtil;
 
-import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_CD;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_CD_COLUMN;
 import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_NAME;
+import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PREF_NAME_COLUMN;
 
 
 /**
@@ -29,19 +31,25 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.PR
  */
 public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
+    /**
+     * インテントKey：都道府県を保存する
+     */
+    public static final String INTENT_KEY_PREFECTURES = "intent_key_prefectures";
+
+    private static final int FIND_ALL = 0;
+
     private Context mContext;
     private View mView;
     private SimpleCursorAdapter mSimpleCursorAdapter;
-    
-    private static final int FIND_ALL = 0;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = getContext();
         mView = inflater.inflate(R.layout.fragment_select, container, false);
-        
+
         setListView();
-        
+
         // 都道府県リスト読み込みスタート
         getActivity().getSupportLoaderManager().initLoader(FIND_ALL, null, this);
         return mView;
@@ -67,9 +75,10 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {}
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
 
-    /** 
+    /**
      * 一覧を作成
      */
     private void setListView() {
@@ -79,12 +88,12 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
         mSimpleCursorAdapter = new SimpleCursorAdapter
                 (mContext, R.layout.list_item_select, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-        ListView listView = (ListView)mView.findViewById(R.id.select_list_view);
+        ListView listView = (ListView) mView.findViewById(R.id.select_list_view);
         listView.setAdapter(mSimpleCursorAdapter);
 
         listView.setOnItemClickListener(this);
     }
-    
+
     /**
      * リスト選択時の処理
      */
@@ -93,13 +102,16 @@ public class PrefFragment extends BaseFragment implements LoaderManager.LoaderCa
 
         // 選択された都道府県コードを取得
         Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-        int prefCd = cursor.getInt(PREF_CD_COLUMN);
 
-        // 路線画面へ遷移
-        Bundle bundle = new Bundle();
-        bundle.putInt(PREF_CD, prefCd);
-        Fragment fragment = new LineFragment();
-        fragment.setArguments(bundle);
-        setFragment(fragment);
+        AreaDto areaDto = new AreaDto();
+        areaDto.pref_cd = cursor.getInt(PREF_CD_COLUMN);
+        areaDto.pref_name = cursor.getString(PREF_NAME_COLUMN);
+
+        // 都道府県コードを保存する
+        PreferencesUtil.savedObjectPreference(getContext(),
+                PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE, areaDto);
+
+        getActivity().setResult(Activity.RESULT_OK);
+        getActivity().finish();
     }
 }

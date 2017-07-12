@@ -34,19 +34,29 @@ import static com.example.suzukitakahiro.trainalert.Db.MasterDb.MasterColumns.ST
 public class StationFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>,
         AdapterView.OnItemClickListener {
 
-    /** 登録駅情報DtoのArgsKey */
+    public static final String TAG = StationFragment.class.getName();
+
+    /**
+     * 登録駅情報DtoのArgsKey
+     */
     public static final String ARGS_KEY_REGISTER_STATION_DTO = "args_key_register_station_dto";
 
-    /** 駅テーブルで路線コードから駅名を取得 */
+    /**
+     * 駅テーブルで路線コードから駅名を取得
+     */
     private static final int FIND_STATION_BY_LINE_ID = 3;
-    /** 駅テーブルで駅コードから駅情報を取得 */
+    /**
+     * 駅テーブルで駅コードから駅情報を取得
+     */
     private static final int FIND_STATION_BY_STATION_ID = 4;
 
     private Context mContext;
     private View mView;
     private SimpleCursorAdapter mSimpleCursorAdapter;
 
-    /** 選択された駅の情報を保持する */
+    /**
+     * 選択された駅の情報を保持する
+     */
     private RegisterStationDto mRegStationDto;
 
     @Override
@@ -118,7 +128,8 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {}
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
 
     /**
      * 一覧を作成
@@ -130,7 +141,7 @@ public class StationFragment extends BaseFragment implements LoaderManager.Loade
         mSimpleCursorAdapter = new SimpleCursorAdapter
                 (mContext, R.layout.list_item_select, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-        ListView listView = (ListView)mView.findViewById(R.id.select_list_view);
+        ListView listView = (ListView) mView.findViewById(R.id.select_list_view);
         listView.setAdapter(mSimpleCursorAdapter);
 
         listView.setOnItemClickListener(this);

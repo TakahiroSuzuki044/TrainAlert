@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Created by suzukitakahiro on 2016/12/18.
- *
+ * <p>
  * サービスUtil
  */
 public class ServiceUtil {
@@ -16,7 +16,7 @@ public class ServiceUtil {
     /**
      * 引数で与えられたサービスが実行中であるかチェックする
      *
-     * @param activity アクティビティ
+     * @param activity    アクティビティ
      * @param serviceName 実行中か調べるサービス名
      * @return 実行中の場合True.
      */
@@ -24,7 +24,7 @@ public class ServiceUtil {
         ActivityManager am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> serviceInfos = am.getRunningServices(Integer.MAX_VALUE);
 
-        for (ActivityManager.RunningServiceInfo serviceInfo: serviceInfos) {
+        for (ActivityManager.RunningServiceInfo serviceInfo : serviceInfos) {
 
             // 実行中のサービス名とチェックサービス名が一致
             if (serviceInfo.service.getClassName().equals(serviceName)) {

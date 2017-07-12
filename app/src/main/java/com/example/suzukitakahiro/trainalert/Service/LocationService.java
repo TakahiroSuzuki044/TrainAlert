@@ -143,7 +143,7 @@ public class LocationService extends Service {
                 Log.d(TAG, "timer_task_run");
 
                 // 最新の現在位置情報を保持データから取得
-                SharedPreferences  sp = getSharedPreferences(PREF_KEY_LOCATION, MODE_PRIVATE);
+                SharedPreferences sp = getSharedPreferences(PREF_KEY_LOCATION, MODE_PRIVATE);
                 long lLatitude = sp.getLong(PREF_KEY_LATITUDE, 0);
                 long lLongitude = sp.getLong(PREF_KEY_LONGITUDE, 0);
                 Double latitude = Double.longBitsToDouble(lLatitude);
@@ -168,8 +168,8 @@ public class LocationService extends Service {
     /**
      * プリファレンスで位置情報を保存する
      *
-     * @param latitude      緯度
-     * @param longitude     経度
+     * @param latitude  緯度
+     * @param longitude 経度
      */
     private void saveLocationAtPreference(double latitude, double longitude) {
 
@@ -178,7 +178,7 @@ public class LocationService extends Service {
         long lLongitude = Double.doubleToLongBits(longitude);
 
         // 保存
-        SharedPreferences  sp = getSharedPreferences(PREF_KEY_LOCATION, MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences(PREF_KEY_LOCATION, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putLong(PREF_KEY_LATITUDE, lLatitude);
         editor.putLong(PREF_KEY_LONGITUDE, lLongitude);

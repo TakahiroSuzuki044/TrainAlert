@@ -12,8 +12,8 @@ import com.example.suzukitakahiro.trainalert.R;
 
 /**
  * @author suzukitakahiro on 2016/08/18.
- *
- * ノティフィケーションユーティリティ
+ *         <p>
+ *         ノティフィケーションユーティリティ
  */
 public class NotificationUtil {
 
@@ -32,10 +32,11 @@ public class NotificationUtil {
         String contentText = context.getResources().getString(R.string.notification_text_for_station);
         createHeadsUpNotification(context, contentText);
     }
+
     /**
      * HeadsUpNotificationを通知する
      *
-     * @param context   コンテキスト
+     * @param context     コンテキスト
      * @param contentText 通知の詳細メッセージ
      */
     private void createHeadsUpNotification(Context context, String contentText) {
@@ -62,7 +63,7 @@ public class NotificationUtil {
                 .build();
 
         NotificationManager manager =
-                (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(0, notification);
     }
 }

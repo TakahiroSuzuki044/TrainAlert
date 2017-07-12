@@ -9,30 +9,45 @@ import android.os.Parcelable;
  * @author suzukitakahiro on 2017/06/17.
  */
 
-public class RegisterStationDto implements Parcelable{
+public class RegisterStationDto implements Parcelable {
 
-    /** ID */
+    /**
+     * ID
+     */
     public int _id = -1;
 
-    /** 路線コード */
+    /**
+     * 路線コード
+     */
     public String line_cd = null;
 
-    /** 路線名 */
+    /**
+     * 路線名
+     */
     public String line_name = null;
 
-    /** 駅コード */
+    /**
+     * 駅コード
+     */
     public String station_cd = null;
 
-    /** 駅名 */
+    /**
+     * 駅名
+     */
     public String station_name = null;
 
-    /** 経度 */
+    /**
+     * 経度
+     */
     public double st_latitude = 0;
 
-    /** 緯度 */
+    /**
+     * 緯度
+     */
     public double st_longitude = 0;
 
-    public RegisterStationDto() {}
+    public RegisterStationDto() {
+    }
 
     protected RegisterStationDto(Parcel in) {
         line_cd = in.readString();

@@ -65,8 +65,10 @@ public class MainFragment extends BaseFragment
 
     private RegisterStationListAdapter mAdapter;
 
-    /** 登録駅情報Dto */
-    private List<RegisterStationDto>  mRegStationDtos;
+    /**
+     * 登録駅情報Dto
+     */
+    private List<RegisterStationDto> mRegStationDtos;
 
     private View mView;
 
@@ -81,7 +83,6 @@ public class MainFragment extends BaseFragment
      * 位置情報の設定をチェック中か
      */
     private boolean mIsCheckingLocationSetting;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -322,105 +323,105 @@ public class MainFragment extends BaseFragment
      */
     private LocationSettingUtil.LocationSettingUtilCallback mSettingUtilCallback =
             new LocationSettingUtil.LocationSettingUtilCallback() {
-        @Override
-        public void onConnectedSuccess(LocationSettingsResult settingsResult) {
-            Log.d(TAG, "onConnectedSuccess: ");
+                @Override
+                public void onConnectedSuccess(LocationSettingsResult settingsResult) {
+                    Log.d(TAG, "onConnectedSuccess: ");
 
-            // チェックフラグをオフ
-            mIsCheckingLocationSetting = false;
+                    // チェックフラグをオフ
+                    mIsCheckingLocationSetting = false;
 
-            final Status status = settingsResult.getStatus();
-            switch (status.getStatusCode()) {
+                    final Status status = settingsResult.getStatus();
+                    switch (status.getStatusCode()) {
 
-                // 位置情報が利用できる
-                case LocationSettingsStatusCodes.SUCCESS:
-                    Log.d(TAG, "onResult: SUCCESS");
+                        // 位置情報が利用できる
+                        case LocationSettingsStatusCodes.SUCCESS:
+                            Log.d(TAG, "onResult: SUCCESS");
 
-                    // 二重押し解禁
-                    mLocationCheckButton.setEnabled(true);
+                            // 二重押し解禁
+                            mLocationCheckButton.setEnabled(true);
 
-                    // 設定チェックの終了
-                    mLocationSettingUtil.stopLocationSettingChecking();
+                            // 設定チェックの終了
+                            mLocationSettingUtil.stopLocationSettingChecking();
 
-                    startCheckLocation();
-                    break;
+                            startCheckLocation();
+                            break;
 
-                // 改善策があるため、ユーザーに位置情報の取得設定変更を促す
-                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                    Log.d(TAG, "onResult: RESOLUTION_REQUIRED");
+                        // 改善策があるため、ユーザーに位置情報の取得設定変更を促す
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            Log.d(TAG, "onResult: RESOLUTION_REQUIRED");
 
-                    try {
-                        // ユーザに位置情報設定を変更してもらうためのダイアログを表示する
-                        status.startResolutionForResult(getActivity(), REQUEST_CODE_SETTING_RESOLUTION);
-                    } catch (IntentSender.SendIntentException e) {
-                        Toast.makeText(getContext(), "誠に申し訳ございません。位置情報のチェックスタートに失敗しました。", Toast.LENGTH_SHORT).show();
+                            try {
+                                // ユーザに位置情報設定を変更してもらうためのダイアログを表示する
+                                status.startResolutionForResult(getActivity(), REQUEST_CODE_SETTING_RESOLUTION);
+                            } catch (IntentSender.SendIntentException e) {
+                                Toast.makeText(getContext(), "誠に申し訳ございません。位置情報のチェックスタートに失敗しました。", Toast.LENGTH_SHORT).show();
+
+                                // 設定チェックの終了
+                                mLocationSettingUtil.stopLocationSettingChecking();
+
+                                // 二重押し解禁
+                                mLocationCheckButton.setEnabled(true);
+                            }
+                            break;
+
+                        // 位置情報が取得できず、なおかつその状態からの復帰も難しい時呼ばれるらしい
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            Log.d(TAG, "onResult: SETTINGS_CHANGE_UNAVAILABLE");
+
+                            Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
+
+                            // 設定チェックの終了
+                            mLocationSettingUtil.stopLocationSettingChecking();
+
+                            // 二重押し解禁
+                            mLocationCheckButton.setEnabled(true);
+                            break;
+                    }
+                }
+
+                @Override
+                public void onConnectionError(ConnectionResult connectionResult) {
+                    Log.d(TAG, "onConnectionError: ");
+
+                    // チェックフラグをオフ
+                    mIsCheckingLocationSetting = false;
+
+                    //解決策があるかどうか
+                    if (!connectionResult.hasResolution()) {
+
+                        //ないので諦める
+                        Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
 
                         // 設定チェックの終了
                         mLocationSettingUtil.stopLocationSettingChecking();
+                        // 二重押し解禁
+                        mLocationCheckButton.setEnabled(true);
+                        return;
+                    }
 
+                    try {
+                        //GooglePlayServicesのActivityに解決を委譲する
+                        connectionResult.startResolutionForResult(getActivity(), RESOLVE_CODE_CONNECTION_RESOLUTION);
+
+                    } catch (IntentSender.SendIntentException e) {
+                        // この例外がきたらどうしようもない。諦めのメッセージを出そう
+                        Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
+
+                        // 設定チェックの終了
+                        mLocationSettingUtil.stopLocationSettingChecking();
                         // 二重押し解禁
                         mLocationCheckButton.setEnabled(true);
                     }
-                    break;
-
-                // 位置情報が取得できず、なおかつその状態からの復帰も難しい時呼ばれるらしい
-                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                    Log.d(TAG, "onResult: SETTINGS_CHANGE_UNAVAILABLE");
-
-                    Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
-
-                    // 設定チェックの終了
-                    mLocationSettingUtil.stopLocationSettingChecking();
-
-                    // 二重押し解禁
-                    mLocationCheckButton.setEnabled(true);
-                    break;
-            }
-        }
-
-        @Override
-        public void onConnectionError(ConnectionResult connectionResult) {
-            Log.d(TAG, "onConnectionError: ");
-
-            // チェックフラグをオフ
-            mIsCheckingLocationSetting = false;
-
-            //解決策があるかどうか
-            if (!connectionResult.hasResolution()) {
-
-                //ないので諦める
-                Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
-
-                // 設定チェックの終了
-                mLocationSettingUtil.stopLocationSettingChecking();
-                // 二重押し解禁
-                mLocationCheckButton.setEnabled(true);
-                return;
-            }
-
-            try {
-                //GooglePlayServicesのActivityに解決を委譲する
-                connectionResult.startResolutionForResult(getActivity(), RESOLVE_CODE_CONNECTION_RESOLUTION);
-
-            } catch (IntentSender.SendIntentException e) {
-                // この例外がきたらどうしようもない。諦めのメッセージを出そう
-                Toast.makeText(getContext(), "誠に申し訳ございません。お使いの端末はサポート外です。", Toast.LENGTH_SHORT).show();
-
-                // 設定チェックの終了
-                mLocationSettingUtil.stopLocationSettingChecking();
-                // 二重押し解禁
-                mLocationCheckButton.setEnabled(true);
-            }
-        }
-    };
+                }
+            };
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
 
-            // 位置情報の取得設定を再設定
             case REQUEST_CODE_SETTING_RESOLUTION:
             case RESOLVE_CODE_CONNECTION_RESOLUTION:
+                // 位置情報の取得設定を再設定
 
                 // 設定チェックの終了
                 mLocationSettingUtil.stopLocationSettingChecking();

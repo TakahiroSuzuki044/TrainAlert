@@ -11,7 +11,7 @@ public class LocationColumns implements BaseColumns {
 
     /**
      * アラーム登録した位置情報テーブル
-     *
+     * <p>
      * タイトル（駅名）
      * 経度
      * 緯度

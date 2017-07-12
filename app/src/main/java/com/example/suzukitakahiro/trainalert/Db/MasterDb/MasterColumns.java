@@ -10,16 +10,18 @@ import android.provider.BaseColumns;
  */
 public class MasterColumns implements BaseColumns {
 
-    /** マスターDBのrowidは_idとして取得する */
+    /**
+     * マスターDBのrowidは_idとして取得する
+     */
     public static final String ROWID = "rowid as _id";
 
     /**
-     *  都道府県テーブル
-     *
-     *  都道府県コード
-     *  都道府県名
+     * 都道府県テーブル
+     * <p>
+     * 都道府県コード
+     * 都道府県名
      **/
-    public static final String PREF_TABLE_NAME ="pref";
+    public static final String PREF_TABLE_NAME = "pref";
     public static final String PREF_CD = "pref_cd";
     public static final int PREF_CD_COLUMN = 1;
     public static final String PREF_NAME = "pref_name";
@@ -27,7 +29,7 @@ public class MasterColumns implements BaseColumns {
 
     /**
      * 路線テーブル
-     *
+     * <p>
      * 路線コード
      * 路線名
      **/
@@ -39,7 +41,7 @@ public class MasterColumns implements BaseColumns {
 
     /**
      * 駅テーブル
-     *
+     * <p>
      * 駅コード
      * 駅名
      * 駅グループコード（路線が複数ある駅で識別するために利用する）

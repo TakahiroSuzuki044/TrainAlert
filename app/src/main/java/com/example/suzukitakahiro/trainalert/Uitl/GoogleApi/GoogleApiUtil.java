@@ -100,7 +100,7 @@ public class GoogleApiUtil {
     }
 
     /**
-     *ロケーションリクエストを返却する
+     * ロケーションリクエストを返却する
      *
      * @return LocationRequest
      */

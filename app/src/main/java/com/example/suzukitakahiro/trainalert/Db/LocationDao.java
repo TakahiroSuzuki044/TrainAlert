@@ -43,8 +43,8 @@ public class LocationDao {
     /**
      * LocationDBと照合し500m圏内の場合はアラートを促す
      *
-     * @param currentLatitude       現在の緯度
-     * @param currentLongitude      現在の経度
+     * @param currentLatitude  現在の緯度
+     * @param currentLongitude 現在の経度
      * @return 登録位置のいずれかと現在位置が500ｍ圏内の場合、True
      */
     public boolean collateLocationDb(double currentLatitude, double currentLongitude) {
@@ -105,6 +105,7 @@ public class LocationDao {
 
     /**
      * アラーム位置DBに位置情報を挿入する
+     *
      * @param regStationDto 登録駅情報
      * @return Cursor
      */
@@ -175,7 +176,7 @@ public class LocationDao {
         }
 
         // ContentValuesのListに格納した情報をDtoに入れ込む
-        for (ContentValues cv: cvList) {
+        for (ContentValues cv : cvList) {
             RegisterStationDto dto = new RegisterStationDto();
             dto._id = cv.getAsInteger(LocationColumns._ID);
             dto.station_name = cv.getAsString(LocationColumns.TITLE);

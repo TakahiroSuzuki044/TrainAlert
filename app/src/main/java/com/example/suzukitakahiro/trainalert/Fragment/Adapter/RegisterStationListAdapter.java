@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * 登録駅を表示するAdapter
  *
- * @author  suzukitakahiro on 2017/06/18.
+ * @author suzukitakahiro on 2017/06/18.
  */
 
 public class RegisterStationListAdapter extends ArrayAdapter<RegisterStationDto> {

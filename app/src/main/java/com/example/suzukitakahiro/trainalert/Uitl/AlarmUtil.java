@@ -14,8 +14,8 @@ import java.util.Calendar;
 
 /**
  * @author suzukitakahiro on 2016/08/19.
- *
- * アラームを登録するためのユーティリティ
+ *         <p>
+ *         アラームを登録するためのユーティリティ
  */
 public class AlarmUtil {
 
@@ -44,7 +44,7 @@ public class AlarmUtil {
                 PendingIntent.getBroadcast(context, 0, timeReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // 設定した時間でブロードキャストする
-        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
     }
 

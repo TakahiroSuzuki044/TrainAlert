@@ -2,9 +2,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ListView
         android:id="@+id/location_list_view"
@@ -16,10 +16,10 @@
 
     <ViewStub
         android:id="@+id/fragment_main_tutorial"
-        android:inflatedId="@+id/fragment_main_tutorial_stub"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:inflatedId="@+id/fragment_main_tutorial_stub"
         android:layout="@layout/activity_main_tutorial_stub"
         android:visibility="gone"/>
 
@@ -28,10 +28,10 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_margin="10dp"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        android:gravity="center"
         android:background="@drawable/selector_main_fragment_start_button_off"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="20sp"
         tools:text="テスト"/>
 
 </LinearLayout>
