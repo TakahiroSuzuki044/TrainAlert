@@ -65,7 +65,7 @@ public class MainActivity extends BaseActivity {
         if (areaDto == null) {
             Intent intent = new Intent(getApplicationContext(), AreaActivity.class);
 
-            // MainFragmentに値を返却する
+            // MainActivityに値を返却する
             startActivityForResult(intent, REQ_CODE_AREA_ACTIVITY);
         }
 
@@ -101,10 +101,16 @@ public class MainActivity extends BaseActivity {
             case REQ_CODE_AREA_ACTIVITY:
                 // 都道府県画面からの戻り
 
+                AreaDto areaDto = (AreaDto) PreferencesUtil.getObjectPreference(
+                        getApplicationContext(), PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE, new AreaDto());
                 if (resultCode == Activity.RESULT_OK) {
 
                     // オプションメニューを書き換える
                     invalidateOptionsMenu();
+                } else if (resultCode == Activity.RESULT_CANCELED && areaDto == null) {
+                    // 初回起動にて都道府県を選択せずに戻ってきた場合はアプリを終了させる
+
+                    finish();
                 }
                 break;
         }
@@ -122,9 +128,13 @@ public class MainActivity extends BaseActivity {
 
         AreaDto areaDto = (AreaDto) PreferencesUtil.getObjectPreference(
                 getApplicationContext(), PreferencesUtil.PREF_KEY_GET_PREFECTURES_CODE, new AreaDto());
+
+        // メニュー生成時に都道府県情報が存在する場合はテキストを表示
         if (areaDto != null && !TextUtils.isEmpty(areaDto.pref_name)) {
             prefecturesNameTextView.setText(areaDto.pref_name);
         }
+
+        // 都道府県エリアのタップ処理をメニューのリスナーに伝搬
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
